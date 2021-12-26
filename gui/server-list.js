@@ -1,6 +1,3 @@
-// TODO: finish hack-button event handler: connect to server, then assess its security; run port-opening apps; then nuke
-// TODO: colour code root/backdoor icons (cannot root, can root, has root; cannot backdoor, can backdoor, has backdoor).
-// TODO: change minimise icon to restore when minimised
 // TODO: add flag to persist app so it can refresh (or just colour in backdoor/root icons and assume they worked (if they can work))
 
 import { Window } from "/gui/lib/Window.js"
@@ -62,6 +59,16 @@ const addServersToDocument = (ns, servers, fragment, ancestors) => {
 const renderServerAsListItem = (ns, hostname, ancestors) => {
 	const server = ns.getServer(hostname)
 	const contractCount = ns.ls(hostname, ".cct").length
+	let rootStatus = server.hasAdminRights ? " icon--has-hacked" : ""
+	let backdoorStatus = server.backdoorInstalled ? " icon--has-backdoored" : ""
+
+	if (!rootStatus && canRootServer(ns, server)) {
+		backdoorStatus = " icon--can-hack"
+	}
+
+	if (!backdoorStatus && rootStatus && server.requiredHackingSkill < ns.getPlayer().hacking) {
+		backdoorStatus = " icon--can-backdoor"
+	}
 
 	const listItem = globalThis["document"].createElement("li")
 	listItem.classList.add("server")
@@ -70,9 +77,9 @@ const renderServerAsListItem = (ns, hostname, ancestors) => {
 	listItem.insertAdjacentHTML("beforeend", `
 		<span class="server__item">
 		${!server.purchasedByPlayer ? `
-			<button class="icon icon--hacked${server.hasAdminRights ? " icon--has-hacked" : ""}">${icons.hacked}</button>
-			<button class="icon icon--backdoored${server.backdoorInstalled ? " icon--has-backdoored" : ""}">${icons.backdoored}</button>
-			` : ''}
+			<button class="icon icon--hacked${rootStatus}">${icons.hacked}</button>
+			<button class="icon icon--backdoored${backdoorStatus}">${icons.backdoored}</button>
+			` : ""}
 			<button class="server__connect">${server.hostname}</button>
 			${contractCount ?
 		`<span class="server__contract-count"><span class="icon icon--contract">${icons.contract}</span> x${contractCount}</span>` :
@@ -96,7 +103,7 @@ const addEventListenersToListItems = (ns, container) => {
 		const ancestors = server.dataset.ancestors.split(",")
 
 		addConnectListener(server, ancestors)
-		addHackListener(server, ancestors)
+		addHackListener(ns, server, ancestors, getCracksOwned(ns))
 		addBackdoorListener(server, ancestors)
 	})
 }
@@ -118,7 +125,7 @@ const getConnectionCommand = (server, ancestors) => ([
  **/
 const addRefreshListener = (container) => {
 	container.querySelector(".server-list__refresh").addEventListener("click", () => {
-		inputTerminalCommand('home; run /gui/server-list.js')
+		inputTerminalCommand("home; run /gui/server-list.js")
 		container.remove()
 	})
 }
@@ -136,12 +143,21 @@ const addConnectListener = (server, ancestors) => {
 
 
 /**
+ * @param {NS} ns
  * @param {HTMLElement} server
  * @param {String[]} ancestors
+ * @param {String[]} cracksOwned
  **/
-const addHackListener = (server, ancestors) => {
-	// server.querySelector(".icon--hacked")?.addEventListener("click", () => {
-	// })
+const addHackListener = (ns, server, ancestors, cracksOwned) => {
+	const { numOpenPortsRequired } = ns.getServer(server.dataset.server)
+
+	server.querySelector(".icon--hacked")?.addEventListener("click", () => {
+		inputTerminalCommand([
+			`${getConnectionCommand(server, ancestors)} `,
+			cracksOwned.slice(0, numOpenPortsRequired).map((crack) => `run ${crack}; `).join(""),
+			"run NUKE.exe"
+		].join(""))
+	})
 }
 
 
@@ -166,3 +182,23 @@ const inputTerminalCommand = (command) => {
 	terminalInput[handler].onChange({ target: terminalInput })
 	terminalInput[handler].onKeyDown({ keyCode: 13, preventDefault: () => null })
 }
+
+
+/**
+ * @param {NS} ns
+ * @param {{numOpenPortsRequired: Number}} server
+ * @return {Boolean}
+ **/
+const canRootServer = (ns, server) => getCracksOwned(ns) > server.numOpenPortsRequired
+
+/**
+ * @param {NS} ns
+ * @return {String[]}
+ **/
+const getCracksOwned = (ns) => ([
+	"BruteSSH.exe",
+	"SQLInject.exe",
+	"HTTPWorm.exe",
+	"FTPCrack.exe",
+	"relaySMTP.exe",
+]).filter(crack => ns.fileExists(crack))

@@ -293,6 +293,10 @@ export const css = `
 		opacity: 0.6;
 	}
 
+	.server-list .icon--hacked.icon--can-hack, .server-list .icon--backdoored.icon--can-backdoor {
+		color: #64a9ff;
+	}
+
 	.server-list .icon--hacked.icon--has-hacked, .server-list .icon--backdoored.icon--has-backdoored, .server-list .icon--contract {
 		color: inherit;
 	}
