@@ -1,4 +1,4 @@
-// TODO: add flag to persist app so it can refresh (or just colour in backdoor/root icons and assume they worked (if they can work))
+// TODO: ctrl+f command
 
 import { Window } from "/gui/lib/Window.js"
 import { icons } from "/gui/lib/constants.js"
@@ -6,7 +6,7 @@ import { getServers } from "/lib/servers.js"
 
 
 /** @param {NS} ns **/
-export async function main (ns) {
+export async function main(ns) {
 	const rootElement = globalThis["document"].createElement("div")
 	rootElement.classList.add("server-list__container")
 	rootElement.insertAdjacentHTML("beforeend", `
@@ -63,7 +63,7 @@ const renderServerAsListItem = (ns, hostname, ancestors) => {
 	let backdoorStatus = server.backdoorInstalled ? " icon--has-backdoored" : ""
 
 	if (!rootStatus && canRootServer(ns, server)) {
-		backdoorStatus = " icon--can-hack"
+		rootStatus = " icon--can-hack"
 	}
 
 	if (!backdoorStatus && rootStatus && server.requiredHackingSkill < ns.getPlayer().hacking) {
@@ -189,7 +189,8 @@ const inputTerminalCommand = (command) => {
  * @param {{numOpenPortsRequired: Number}} server
  * @return {Boolean}
  **/
-const canRootServer = (ns, server) => getCracksOwned(ns) > server.numOpenPortsRequired
+const canRootServer = (ns, server) => getCracksOwned(ns).length >= server.numOpenPortsRequired
+
 
 /**
  * @param {NS} ns
