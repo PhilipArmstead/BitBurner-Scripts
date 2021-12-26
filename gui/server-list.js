@@ -1,6 +1,8 @@
 // TODO: finish hack-button event handler: connect to server, then assess its security; run port-opening apps; then nuke
-// TODO: filter out rooted/backdoor icons from purchased servers
-
+// TODO: colour code root/backdoor icons (cannot root, can root, has root; cannot backdoor, can backdoor, has backdoor).
+// TODO: change minimise icon to restore when minimised
+// TODO: add flag to persist app so it can refresh (or just colour in backdoor/root icons and assume they worked (if they can work))
+// TODO: refresh button to give the command to restart itself
 
 import { Window } from "/gui/lib/Window.js"
 import { icons } from "/gui/lib/constants.js"
@@ -13,6 +15,7 @@ export async function main (ns) {
 	rootElement.classList.add("server-list__container")
 	rootElement.insertAdjacentHTML("beforeend", `
 		<ul class="server-list"></ul>
+		<button class="server-list__refresh">Refresh</button>
 	`)
 
 	populateServers(ns, rootElement)
@@ -88,6 +91,8 @@ const renderServerAsListItem = (ns, hostname, ancestors) => {
  * @param {HTMLElement} container
  **/
 const addEventListenersToListItems = (ns, container) => {
+	addRefreshListener(container)
+
 	Array.from(container.querySelectorAll(".server")).forEach((server) => {
 		const ancestors = server.dataset.ancestors.split(",")
 
@@ -107,6 +112,17 @@ const getConnectionCommand = (server, ancestors) => ([
 	...ancestors.slice(1).map((node) => `connect ${node}; `),
 	`connect ${server.dataset.server}; `,
 ]).join("")
+
+
+/**
+ * @param {HTMLElement} container
+ **/
+const addRefreshListener = (container) => {
+	container.querySelector(".server-list__refresh").addEventListener("click", () => {
+		inputTerminalCommand('home; run /gui/server-list.js')
+		container.remove()
+	})
+}
 
 
 /**

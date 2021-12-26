@@ -238,9 +238,9 @@ export const css = `
 		cursor: pointer;
 		margin: 0;
 		padding: 4px;
-		position: absolute;
-		right: 14px;
-		top: 0;
+    position: fixed;
+    right: 26px;
+    top: 36px;
 	}
 
 	.server-list {
