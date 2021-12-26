@@ -86,7 +86,9 @@ export const css = `
 		min-width: 0;
 	}
 
-	.window--minimised .window__content {
+	.window--minimised .window__content,
+	.window--minimised .window__cta-group .icon--minimise,
+	.window:not(.window--minimised) .window__cta-group .icon--restore {
 		display: none;
 	}
 	
@@ -147,6 +149,10 @@ export const css = `
 	.window__cta-group > * {
 		background-position: 50% 50%;
 		background-size: 14px auto;
+	}
+	
+	.window__cta-group .icon--restore {
+		color: #d6cec8;
 	}
 	
 	.window__content {

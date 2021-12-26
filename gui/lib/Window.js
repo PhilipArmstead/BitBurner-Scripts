@@ -175,8 +175,16 @@ export class Window {
 					<h1 class="window__title"></h1>
 					<div class="window__cta-group">
 						<button class="btn btn--small window__cta-minimise">
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" class="icon icon--minimise">
 								<path d="m3 13h12v2h-12z" fill="#000" />
+							</svg>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" class="icon icon--restore">
+								<rect x="5" y="1.5" width="11" height="3" stroke="none" fill="#000"/>
+								<g fill="currentColor">
+									<rect x="5.8" y="4.3" width="9.4" height="6.5" stroke="#000" stroke-width="1.6"/>
+									<rect x="1.8" y="9" width="9.4" height="6.5" stroke="#000" stroke-width="1.6"/>
+								</g>
+								<rect x="1" y="6.2" width="11" height="3" stroke="none" fill="#000"/>
 							</svg>
 						</button>
 						<button class="btn btn--small window__cta-close">

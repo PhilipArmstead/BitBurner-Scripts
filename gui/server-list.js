@@ -2,7 +2,6 @@
 // TODO: colour code root/backdoor icons (cannot root, can root, has root; cannot backdoor, can backdoor, has backdoor).
 // TODO: change minimise icon to restore when minimised
 // TODO: add flag to persist app so it can refresh (or just colour in backdoor/root icons and assume they worked (if they can work))
-// TODO: refresh button to give the command to restart itself
 
 import { Window } from "/gui/lib/Window.js"
 import { icons } from "/gui/lib/constants.js"
