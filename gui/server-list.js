@@ -59,16 +59,7 @@ const addServersToDocument = (ns, servers, fragment, ancestors) => {
 const renderServerAsListItem = (ns, hostname, ancestors) => {
 	const server = ns.getServer(hostname)
 	const contractCount = ns.ls(hostname, ".cct").length
-	let rootStatus = server.hasAdminRights ? " icon--has-hacked" : ""
-	let backdoorStatus = server.backdoorInstalled ? " icon--has-backdoored" : ""
-
-	if (!rootStatus && canRootServer(ns, server)) {
-		rootStatus = " icon--can-hack"
-	}
-
-	if (!backdoorStatus && rootStatus && server.requiredHackingSkill < ns.getPlayer().hacking) {
-		backdoorStatus = " icon--can-backdoor"
-	}
+	const { hasBackdoorClass, hasBackdoorTitle, hasRootClass, hasRootTitle } = getServerIsCompromisedStatus(ns, server)
 
 	const listItem = globalThis["document"].createElement("li")
 	listItem.classList.add("server")
@@ -77,8 +68,8 @@ const renderServerAsListItem = (ns, hostname, ancestors) => {
 	listItem.insertAdjacentHTML("beforeend", `
 		<span class="server__item">
 		${!server.purchasedByPlayer ? `
-			<button class="icon icon--hacked${rootStatus}">${icons.hacked}</button>
-			<button class="icon icon--backdoored${backdoorStatus}">${icons.backdoored}</button>
+			<button class="icon icon--hacked${hasRootClass}" ${hasRootTitle ? `title="${hasRootTitle}"` : ''}>${icons.hacked}</button>
+			<button class="icon icon--backdoored${hasBackdoorClass}" ${hasBackdoorTitle ? `title="${hasBackdoorTitle}"` : ''}>${icons.backdoored}</button>
 			` : ""}
 			<button class="server__connect">${server.hostname}</button>
 			${contractCount ?
@@ -203,3 +194,27 @@ const getCracksOwned = (ns) => ([
 	"FTPCrack.exe",
 	"relaySMTP.exe",
 ]).filter(crack => ns.fileExists(crack))
+
+
+/**
+ * @param {NS} ns
+ * @param {{hasAdminRights: Boolean, backdoorInstalled: Boolean, requiredHackingSkill: Number, numOpenPortsRequired: Number}} server
+ * @return {{ hasBackdoorClass: String, hasBackdoorTitle: String, hasRootClass: String, hasRootTitle: String }}
+ **/
+const getServerIsCompromisedStatus = (ns, server) => {
+	let hasRootClass = server.hasAdminRights ? " icon--has-hacked" : ""
+	let hasBackdoorClass = server.backdoorInstalled ? " icon--has-backdoored" : ""
+
+	if (!hasRootClass && canRootServer(ns, server)) {
+		hasRootClass = " icon--can-hack"
+	}
+
+	if (!hasBackdoorClass && hasRootClass && server.requiredHackingSkill < ns.getPlayer().hacking) {
+		hasBackdoorClass = " icon--can-backdoor"
+	}
+
+	const hasRootTitle = hasRootClass.indexOf('--can') !== -1 ? 'Click for root access' : (!hasRootClass ? 'Cannot Nuke this server yet' : '')
+	const hasBackdoorTitle = hasBackdoorClass.indexOf('--can') !== -1 ? 'Click to backdoor' : (!hasBackdoorClass ? 'Cannot backdoor this server yet' : '')
+
+	return { hasBackdoorClass, hasBackdoorTitle, hasRootClass, hasRootTitle }
+}
