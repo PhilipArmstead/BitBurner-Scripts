@@ -40,7 +40,7 @@ const populateServers = (ns, rootElement) => {
  **/
 const addServersToDocument = (ns, servers, fragment, ancestors) => {
 	Object.entries(servers).forEach(([hostname, { connections }]) => {
-		const listItem = renderServerAsListItem(ns.getServer(hostname), ancestors)
+		const listItem = renderServerAsListItem(ns, hostname, ancestors)
 
 		fragment.appendChild(listItem)
 
@@ -52,20 +52,27 @@ const addServersToDocument = (ns, servers, fragment, ancestors) => {
 
 
 /**
- * @param {{hostname: String, hasAdminRights: Boolean, backdoorInstalled: Boolean}} server
+ * @param {NS} ns
+ * @param {String} hostname
  * @param {String[]} ancestors
  * @return {HTMLLIElement}
  **/
-const renderServerAsListItem = (server, ancestors) => {
+const renderServerAsListItem = (ns, hostname, ancestors) => {
+	const server = ns.getServer(hostname)
+	const contractCount = ns.ls(hostname, ".cct").length
+
 	const listItem = globalThis["document"].createElement("li")
 	listItem.classList.add("server")
-	listItem.dataset.server = server.hostname
+	listItem.dataset.server = hostname
 	listItem.dataset.ancestors = ancestors.join(",")
 	listItem.insertAdjacentHTML("beforeend", `
 		<span class="server__item">
 			<button class="icon icon--hacked${server.hasAdminRights ? " icon--has-hacked" : ""}">${icons.hacked}</button>
 			<button class="icon icon--backdoored${server.backdoorInstalled ? " icon--has-backdoored" : ""}">${icons.backdoored}</button>
 			<button class="server__connect">${server.hostname}</button>
+			${contractCount ?
+		`<span class="server__contract-count"><span class="icon icon--contract">${icons.contract}</span> x${contractCount}</span>` :
+		""}
 		</span>
 		<ul class="server__children"></ul>
 	`)

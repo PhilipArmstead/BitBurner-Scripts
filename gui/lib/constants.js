@@ -13,6 +13,12 @@ export const icons = {
 			<path d="M43.375 0h-33.5c-.101 0-.199.011-.295.03h-.004a1.49 1.49 0 0 0-.307.1c-.025.011-.047.026-.071.039-.071.036-.14.076-.204.123-.012.008-.025.012-.035.021-.02.014-.034.034-.053.05a1.474 1.474 0 0 0-.337.413c-.018.032-.037.063-.052.096-.032.07-.057.143-.078.218-.008.028-.02.055-.026.084a1.468 1.468 0 0 0-.038.326v43.378c0 .156.031.303.075.444.008.025.014.05.023.074.05.134.117.258.201.371.015.02.031.038.047.057.093.113.198.217.32.299l.004.002c.125.083.265.142.412.185.014.004.024.014.038.017l26.199 6.872a1.495 1.495 0 0 0 1.297-.264 1.5 1.5 0 0 0 .583-1.188V8.372a1.5 1.5 0 0 0-1.12-1.451L21.505 3h20.37v41.878a1.5 1.5 0 1 0 3 0V1.5a1.5 1.5 0 0 0-1.5-1.5zM23.933 28.838a1.502 1.502 0 0 1 1.855-1.03l7 2a1.5 1.5 0 0 1-.824 2.884l-7-2a1.5 1.5 0 0 1-1.031-1.854z"/>
 		</svg>
 	`,
+	contract: `
+		<svg viewBox="0 0 489.6 489.6" fill="currentColor">
+			<path d="m311.6 437.9-129.4 34.6 9.4-34.6H44.7V51.7h293v168.2l44.7-44.7V3.1H0v483.4h382.4V369.2z"/>
+			<path d="m235.1 364.9-20.2 74.6 75-19.8zM425.5 164.7 246.7 343.5l.4.4 63.8 63.7h.4l178.3-178.7zM292.6 105.3H91.7c-6.2 0-11.7 5.1-11.7 11.7 0 6.2 5.1 11.7 11.7 11.7h200.9c6.2 0 11.7-5.1 11.7-11.7 0-6.3-5.5-11.7-11.7-11.7zM292.6 176.4H91.7c-6.2 0-11.7 5.1-11.7 11.7 0 6.2 5.1 11.7 11.7 11.7h200.9c6.2 0 11.7-5.1 11.7-11.7 0-6.3-5.5-11.7-11.7-11.7zM304.3 259.2c0-6.2-5.1-11.7-11.7-11.7H91.7c-6.2 0-11.7 5.1-11.7 11.7 0 6.2 5.1 11.7 11.7 11.7h200.9c6.2-.1 11.7-5.5 11.7-11.7z"/>
+		</svg>
+	`,
 }
 
 export const css = `
@@ -262,11 +268,10 @@ export const css = `
 		pointer-events: none;
 	}
 
-	.server-list button.icon {
+	.server-list .icon {
 		background: none;
 		border: none;
 		color: #F00;
-		cursor: pointer;
 		display: inline-block;
 		height: 13px;
 		padding: 0;
@@ -274,12 +279,20 @@ export const css = `
 		width: 13px;
 	}
 
+	.server-list button.icon {
+		cursor: pointer;
+	}
+
 	.server-list button.icon:hover {
 		opacity: 0.6;
 	}
 
-	.server-list .icon--hacked.icon--has-hacked, .server-list .icon--backdoored.icon--has-backdoored {
+	.server-list .icon--hacked.icon--has-hacked, .server-list .icon--backdoored.icon--has-backdoored, .server-list .icon--contract {
 		color: inherit;
+	}
+
+	.server-list .server__contract-count {
+		color: yellow;
 	}
 
 	.server-list .server__connect {
