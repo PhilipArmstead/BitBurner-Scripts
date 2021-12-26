@@ -67,8 +67,10 @@ const renderServerAsListItem = (ns, hostname, ancestors) => {
 	listItem.dataset.ancestors = ancestors.join(",")
 	listItem.insertAdjacentHTML("beforeend", `
 		<span class="server__item">
+		${!server.purchasedByPlayer ? `
 			<button class="icon icon--hacked${server.hasAdminRights ? " icon--has-hacked" : ""}">${icons.hacked}</button>
 			<button class="icon icon--backdoored${server.backdoorInstalled ? " icon--has-backdoored" : ""}">${icons.backdoored}</button>
+			` : ''}
 			<button class="server__connect">${server.hostname}</button>
 			${contractCount ?
 		`<span class="server__contract-count"><span class="icon icon--contract">${icons.contract}</span> x${contractCount}</span>` :
@@ -123,7 +125,7 @@ const addConnectListener = (server, ancestors) => {
  * @param {String[]} ancestors
  **/
 const addHackListener = (server, ancestors) => {
-	// server.querySelector(".icon--hacked").addEventListener("click", () => {
+	// server.querySelector(".icon--hacked")?.addEventListener("click", () => {
 	// })
 }
 
@@ -133,7 +135,7 @@ const addHackListener = (server, ancestors) => {
  * @param {String[]} ancestors
  **/
 const addBackdoorListener = (server, ancestors) => {
-	server.querySelector(".icon--backdoored").addEventListener("click", () => {
+	server.querySelector(".icon--backdoored")?.addEventListener("click", () => {
 		inputTerminalCommand(`${getConnectionCommand(server, ancestors)} backdoor`)
 	})
 }
