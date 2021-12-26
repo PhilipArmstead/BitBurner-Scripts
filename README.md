@@ -13,3 +13,10 @@ Below are some things I think you'll be most interested in.
   [Minimised boxes demo](docs/qol-minimise-boxes.gif)
   
 Quality of life scripts need running once to activate; they will end immediately, freeing up RAM, but continue to function.
+
+
+## GUI
+
+- `/gui/server-list.js` Render a list of all available servers in a draggable, minimisable pop-up window. Servers can be connected to and backdoored by clicking them.  
+    This script depends on the `/gui/lib/*` scripts as well as `/lib/servers.js`   
+    [Server list demo](/docs/server-list.png)
