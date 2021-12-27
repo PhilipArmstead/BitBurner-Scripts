@@ -28,6 +28,7 @@ const populateServers = (ns, rootElement) => {
 
 	const win = new Window("Server list", { theme: "terminal", content: rootElement.outerHTML })
 	addEventListenersToListItems(ns, win.element)
+	win.element.classList.add('window--server-list')
 }
 
 

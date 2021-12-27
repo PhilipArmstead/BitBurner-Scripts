@@ -52,11 +52,14 @@ export const windowCss = `
 		display: inline-flex;
 		flex-wrap: wrap;
 		left: 0;
-		max-width: 65vw;
-		min-width: 35vw;
+		min-height: 220px;
+		min-width: 220px;
+		overflow: auto;
 		pointer-events: auto;
 		position: absolute;
+		resize: both;
 		top: 0;
+		width: 50vw;
 	}
 	
 	.window--minimised {
@@ -137,9 +140,7 @@ export const windowCss = `
 		background: #FFF;
 		display: flex;
 		flex: 1 0 auto;
-		height: inherit;
-		max-height: 75vh;
-		min-height: 27vh;
+		height: calc(100% - 26px);
 		overflow: auto;
 		padding: 6px;
 		width: 100%;
@@ -196,6 +197,10 @@ export const windowCss = `
 	}
 	
 	/** Apps **/
+	.window--server-list {
+		height: 60vh;
+	}
+
 	.server-list__container {
 		overflow-y: scroll;
 		position: relative;
