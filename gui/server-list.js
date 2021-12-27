@@ -1,4 +1,5 @@
 import { Window } from "/gui/lib/Window.js"
+import ToastManager from "/gui/lib/ToastManager.js"
 import { icons } from "/gui/lib/constants.js"
 import { getServers } from "/lib/servers.js"
 
@@ -118,8 +119,9 @@ const getConnectionCommand = (server, ancestors) => ([
  **/
 const addRefreshListener = (container) => {
 	container.querySelector(".server-list__refresh").addEventListener("click", () => {
-		inputTerminalCommand("home; run /gui/server-list.js")
-		container.remove()
+		if (inputTerminalCommand("home; run /gui/server-list.js")) {
+			container.remove()
+		}
 	})
 }
 
@@ -194,13 +196,24 @@ const addBackdoorListener = (server, ancestors) => {
 
 /**
  * @param {String} command
+ * @return {Boolean}
  **/
 const inputTerminalCommand = (command) => {
 	const terminalInput = globalThis["document"].getElementById("terminal-input")
-	terminalInput.value = command
-	const handler = Object.keys(terminalInput)[1]
-	terminalInput[handler].onChange({ target: terminalInput })
-	terminalInput[handler].onKeyDown({ keyCode: 13, preventDefault: () => null })
+	if (!terminalInput) {
+		ToastManager.instance.add("The terminal must be visible")
+	} else if (terminalInput.hasAttribute("disabled")) {
+		ToastManager.instance.add("The terminal must not be in use")
+	} else {
+		terminalInput.value = command
+		const handler = Object.keys(terminalInput)[1]
+		terminalInput[handler].onChange({ target: terminalInput })
+		terminalInput[handler].onKeyDown({ keyCode: 13, preventDefault: () => null })
+
+		return true
+	}
+
+	return false
 }
 
 

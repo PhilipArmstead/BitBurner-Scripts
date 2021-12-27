@@ -1,8 +1,8 @@
-export default `
+export const windowCss = `
 	.btn {
 		background-color: #d6cec8;
 		border: none;
-		box-shadow: inset -1px -1px #404040,inset 1px 1px #fff,inset -2px -2px gray,inset 2px 2px #eceae7;
+		box-shadow: inset -1px -1px #404040, inset 1px 1px #fff, inset -2px -2px gray, inset 2px 2px #eceae7;
 		font-size: 13px;
 		height: 26px;
 		padding: 4px 6px;
@@ -11,7 +11,7 @@ export default `
 	}
 	
 	.btn:active {
-		box-shadow: inset -1px -1px #fff,inset 1px 1px #404040,inset -2px -2px #eceae7,inset 2px 2px gray;
+		box-shadow: inset -1px -1px #fff, inset 1px 1px #404040, inset -2px -2px #eceae7, inset 2px 2px gray;
 		padding: 5px 5px 3px 7px;
 	}
 	
@@ -51,18 +51,18 @@ export default `
 		align-items: center;
 		display: inline-flex;
 		flex-wrap: wrap;
-    left: 0;
+		left: 0;
 		max-width: 65vw;
 		min-width: 35vw;
 		pointer-events: auto;
 		position: absolute;
-    top: 0;
+		top: 0;
 	}
-
+	
 	.window--minimised {
 		min-width: 0;
 	}
-
+	
 	.window--minimised .window__content,
 	.window--minimised .window__cta-group .icon--minimise,
 	.window:not(.window--minimised) .window__cta-group .icon--restore {
@@ -92,7 +92,7 @@ export default `
 		padding-left: 5px;
 		padding-bottom: 2px;
 	}
-
+	
 	.window__menu span {
 		padding: 0 1px;
 		margin-right: 12px;
@@ -100,7 +100,8 @@ export default `
 		border: 1px inset transparent;
 		cursor: pointer;
 	}
-	.window__menu span:hover{
+	
+	.window__menu span:hover {
 		border: 1px inset #bdbdbd;
 	}
 	
@@ -200,20 +201,20 @@ export default `
 		position: relative;
 		width: 100%;
 	}
-
+	
 	.server-list__container::-webkit-scrollbar {
 		display: block;
 		width: 10px;
 	}
-
-	.server-list__container::-webkit-scrollbar-track  {
+	
+	.server-list__container::-webkit-scrollbar-track {
 		background-color: #00cc0021;
 	}
 	
 	.server-list__container::-webkit-scrollbar-thumb {
 		background-color: #0c0;
 	}
-
+	
 	.server-list__refresh, .server-list__search, .server-list__search-input {
 		background: none;
 		border: 1px solid;
@@ -225,64 +226,64 @@ export default `
 		position: fixed;
 		right: 26px;
 	}
-
+	
 	.server-list__refresh {
 		top: 36px;
 	}
-
+	
 	.server-list__search-input {
 		top: 69px;
 		transition: .2s cubic-bezier(0.4, 0.0, 0.2, 1);
 		transition-property: color, width;
 		width: 65px;
 	}
-
+	
 	.server-list__search-input::-webkit-input-placeholder {
 		color: #006F00;
 	}
-
+	
 	.server-list__search-input:not([type="search"])::-webkit-input-placeholder {
 		color: inherit;
 		text-align: center;
 	}
-
+	
 	.server-list__search-input[type="search"] {
 		width: 130px;
 	}
-
+	
 	.server-list {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 		width: 100%;
 	}
-
+	
 	.server-list.server-list--filtered ul {
 		padding-left: 0;
 	}
-
+	
 	.server-list, .server-list ul, .server-list li {
 		list-style: none;
 	}
-
+	
 	.server-list ul {
 		padding-left: 20px;
 	}
-
+	
 	.server-list .server__item {
 		display: inline-block;
 		padding: 1px 5px;
 		vertical-align: middle;
 	}
-
+	
 	.server-list .server__item.server--filtered {
 		display: none;
 	}
-
+	
 	.server-list .icon * {
 		pointer-events: none;
 	}
-
+	
 	.server-list .icon {
 		background: none;
 		border: none;
@@ -293,27 +294,27 @@ export default `
 		transition: opacity linear .2s;
 		width: 13px;
 	}
-
+	
 	.server-list button.icon {
 		cursor: pointer;
 	}
-
+	
 	.server-list button.icon:hover {
 		opacity: 0.6;
 	}
-
+	
 	.server-list .icon--hacked.icon--can-hack, .server-list .icon--backdoored.icon--can-backdoor {
 		color: #64a9ff;
 	}
-
+	
 	.server-list .icon--hacked.icon--has-hacked, .server-list .icon--backdoored.icon--has-backdoored, .server-list .icon--contract {
 		color: inherit;
 	}
-
+	
 	.server-list .server__contract-count {
 		color: yellow;
 	}
-
+	
 	.server-list .server__connect {
 		background: none;
 		border: none;
@@ -323,39 +324,39 @@ export default `
 		text-decoration: dotted underline;
 		transition: text-decoration linear .2s;
 	}
-
+	
 	.server-list .server__connect:hover {
-    text-decoration-style: double;
+		text-decoration-style: double;
 	}
-
+	
 	/** Themes */
 	/** Terminal */
 	.window.window--theme-terminal {
 		border: 1px solid #666;
 		font-family: Consolas, 'Liberation Mono', 'Fira Code', monospace;
 	}
-
+	
 	.window.window--theme-terminal .window__toolbar {
 		background: #111;
 		color: #FFF;
 	}
-
+	
 	.window.window--theme-terminal .window__content {
 		background: #000000d6;
 		color: #0c0;
 	}
-
+	
 	/** Windows */
 	.window.window--theme-windows {
-		box-shadow: inset -1px -1px #404040,inset 1px 1px #eceae7,inset -2px -2px gray,inset 2px 2px #fff;
+		box-shadow: inset -1px -1px #404040, inset 1px 1px #eceae7, inset -2px -2px gray, inset 2px 2px #fff;
 		font-family: Tahoma, "Segoe UI", Geneva, sans-serif;
 		padding: 2px;
 	}
-
+	
 	.window.window--theme-windows .window__toolbar {
 		border: 1px solid #D4D0C8;
 	}
-
+	
 	.window.window--theme-windows .window__content {
 		background: #FFF;
 		border: 2px solid #D4D0C8;
@@ -363,7 +364,64 @@ export default `
 	}
 	
 	.window.window--theme-windows.window--focused .window__toolbar {
-		background: linear-gradient(to right,#0A246A 0%,#A6CAF0 100%);
+		background: linear-gradient(to right, #0A246A 0%, #A6CAF0 100%);
 		color: #fff;
+	}
+	`
+
+export const toastCss = `
+	.toast-container {
+		align-items: flex-end;
+		bottom: 20px;
+		display: flex;
+		flex-direction: column-reverse;
+		justify-content: flex-start;
+		left: 0;
+		pointer-events: none;
+		position: fixed;
+		right: 17px;
+		top: 0;
+	}
+	
+	.toast__message {
+		background: #000c;
+		margin-top: 10px;
+		overflow: visible;
+		transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
+		transition-property: margin, opacity, transform;
+	}
+	
+	.toast__message:not(.toast--show) {
+		margin-top: -50px;
+		opacity: 0;
+		transform: translateX(100%);
+	}
+	
+	.toast__message--theme-success .toast__message-inner {
+		border-color: #33d8337a;
+	}
+	
+	.toast__message--theme-success .toast__text {
+		color: #33d833;
+	}
+	
+	.toast__message-inner {
+		align-items: center;
+		border: 2px solid #00a5f37a;
+		border-radius: 4px;
+		box-sizing: border-box;
+		display: flex;
+		font-family: "Lucida Console", "Lucida Sans Unicode", "Fira Mono", Consolas, "Courier New", Courier, monospace;
+		font-weight: 400;
+		font-size: 0.875rem;
+		line-height: 1.43;
+		min-height: 50px;
+		padding: 6px 16px;
+		pointer-events: auto;
+	}
+	
+	.toast__text {
+		color: #00a5f3;
+		margin: 0;
 	}
 `
