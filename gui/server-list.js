@@ -1,17 +1,16 @@
-// TODO: ctrl+f command
-
 import { Window } from "/gui/lib/Window.js"
 import { icons } from "/gui/lib/constants.js"
 import { getServers } from "/lib/servers.js"
 
 
 /** @param {NS} ns **/
-export async function main(ns) {
+export async function main (ns) {
 	const rootElement = globalThis["document"].createElement("div")
 	rootElement.classList.add("server-list__container")
 	rootElement.insertAdjacentHTML("beforeend", `
 		<ul class="server-list"></ul>
 		<button class="server-list__refresh">Refresh</button>
+		<input class="server-list__search-input" placeholder="Search" />
 	`)
 
 	populateServers(ns, rootElement)
@@ -68,8 +67,10 @@ const renderServerAsListItem = (ns, hostname, ancestors) => {
 	listItem.insertAdjacentHTML("beforeend", `
 		<span class="server__item">
 		${!server.purchasedByPlayer ? `
-			<button class="icon icon--hacked${hasRootClass}" ${hasRootTitle ? `title="${hasRootTitle}"` : ''}>${icons.hacked}</button>
-			<button class="icon icon--backdoored${hasBackdoorClass}" ${hasBackdoorTitle ? `title="${hasBackdoorTitle}"` : ''}>${icons.backdoored}</button>
+			<button class="icon icon--hacked${hasRootClass}" ${hasRootTitle ? `title="${hasRootTitle}"` : ""}>${icons.hacked}</button>
+			<button class="icon icon--backdoored${hasBackdoorClass}" ${hasBackdoorTitle ?
+		`title="${hasBackdoorTitle}"` :
+		""}>${icons.backdoored}</button>
 			` : ""}
 			<button class="server__connect">${server.hostname}</button>
 			${contractCount ?
@@ -89,6 +90,7 @@ const renderServerAsListItem = (ns, hostname, ancestors) => {
  **/
 const addEventListenersToListItems = (ns, container) => {
 	addRefreshListener(container)
+	addSearchListener(container)
 
 	Array.from(container.querySelectorAll(".server")).forEach((server) => {
 		const ancestors = server.dataset.ancestors.split(",")
@@ -118,6 +120,33 @@ const addRefreshListener = (container) => {
 	container.querySelector(".server-list__refresh").addEventListener("click", () => {
 		inputTerminalCommand("home; run /gui/server-list.js")
 		container.remove()
+	})
+}
+
+
+/**
+ * @param {HTMLElement} container
+ **/
+const addSearchListener = (container) => {
+	const search = container.querySelector(".server-list__search-input")
+	const terminalInput = globalThis["document"].getElementById("terminal-input")
+	const className = "input--focused"
+
+	search.addEventListener("focus", () => {
+		search.classList.add(className)
+		search.setAttribute("type", "search")
+		terminalInput.setAttribute("disabled", "disabled")
+	})
+	search.addEventListener("blur", () => {
+		search.classList.remove(className)
+		terminalInput.removeAttribute("disabled")
+
+		if (!search.value.trim()) {
+			search.removeAttribute("type")
+		}
+	})
+	search.addEventListener("input", () => {
+		filterServers(container, search.value.trim())
 	})
 }
 
@@ -213,8 +242,41 @@ const getServerIsCompromisedStatus = (ns, server) => {
 		hasBackdoorClass = " icon--can-backdoor"
 	}
 
-	const hasRootTitle = hasRootClass.indexOf('--can') !== -1 ? 'Click for root access' : (!hasRootClass ? 'Cannot Nuke this server yet' : '')
-	const hasBackdoorTitle = hasBackdoorClass.indexOf('--can') !== -1 ? 'Click to backdoor' : (!hasBackdoorClass ? 'Cannot backdoor this server yet' : '')
+	const hasRootTitle = hasRootClass.indexOf("--can") !== -1 ?
+		"Click for root access" :
+		(!hasRootClass ? "Cannot Nuke this server yet" : "")
+	const hasBackdoorTitle = hasBackdoorClass.indexOf("--can") !== -1 ?
+		"Click to backdoor" :
+		(!hasBackdoorClass ? "Cannot backdoor this server yet" : "")
 
 	return { hasBackdoorClass, hasBackdoorTitle, hasRootClass, hasRootTitle }
+}
+
+
+/**
+ * @param {HTMLElement} container
+ * @param {String} searchValue
+ **/
+const filterServers = (container, searchValue) => {
+	const serverList = container.querySelector(".server-list")
+	const filteredClassName = "server--filtered"
+	const serverFilterClassName = "server-list--filtered"
+
+	if (searchValue) {
+		serverList.classList.add(serverFilterClassName)
+
+		Array.from(container.querySelectorAll(".server__item")).forEach((element) => {
+			if (element.querySelector(".server__connect").textContent.indexOf(searchValue) === -1) {
+				element.classList.add(filteredClassName)
+			} else {
+				element.classList.remove(filteredClassName)
+			}
+		})
+	} else {
+		serverList.classList.remove(serverFilterClassName)
+
+		Array.from(container.querySelectorAll(".server__item")).forEach((element) => {
+			element.classList.remove(filteredClassName)
+		})
+	}
 }

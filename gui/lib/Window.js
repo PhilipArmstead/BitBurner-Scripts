@@ -1,4 +1,5 @@
-import { css, stylesheetId, windowContainerId, windowFocusedClass } from "/gui/lib/constants.js"
+import { stylesheetId, windowContainerId, windowFocusedClass } from "/gui/lib/constants.js"
+import css from "/gui/css/window.js"
 
 export class Window {
 	#left
