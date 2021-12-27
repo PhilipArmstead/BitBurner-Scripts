@@ -63,7 +63,11 @@ export const windowCss = `
 	}
 	
 	.window--minimised {
+		height: auto !important;
+		min-height: 0;
 		min-width: 0;
+		resize: none;
+		width: auto !important;
 	}
 	
 	.window--minimised .window__content,
