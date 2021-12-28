@@ -1,7 +1,7 @@
 const repo = "PhilipArmstead/BitBurner-Scripts"
 const branch = "main"
 const baseUrl = `https://raw.githubusercontent.com/${repo}/${branch}/`
-const config = "config.json"
+const configFile = "config.txt"
 
 
 /** @param {NS} ns */
@@ -25,13 +25,14 @@ export async function main (ns) {
 /** @param {NS} ns */
 async function fetchConfig (ns) {
 	try {
-		const dependenciesFile = `/gui/${config}`
+		const dependenciesFile = `/gui/${configFile}`
 		await ns.wget(`${baseUrl}${dependenciesFile}?ts=${+new Date()}`, dependenciesFile)
 		const config = JSON.parse(ns.read(dependenciesFile))
-		await ns.rm(dependenciesFile)
+		ns.rm(dependenciesFile)
 
 		return config
 	} catch (e) {
-		ns.tprint(`ERROR: Downloading and reading config file failed ${config}`)
+		ns.tprint(`ERROR: Downloading and reading config file failed ${configFile}`)
+		throw e
 	}
 }
