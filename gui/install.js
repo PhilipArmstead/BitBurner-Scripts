@@ -12,7 +12,7 @@ export async function main (ns) {
 		const path = `${baseUrl}${filename}`
 
 		try {
-			await ns.wget(`${path}?ts=${+new Date()}`, path)
+			await ns.wget(`${path}?ts=${+new Date()}`, filename)
 		} catch (e) {
 			ns.tprint(`ERROR: could not download ${path}`)
 		}
