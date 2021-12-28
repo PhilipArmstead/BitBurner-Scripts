@@ -13,6 +13,9 @@ Below are some things I think you'll be most interested in.
 - `/qol/make-boxes-minimisable.js` This script will allow you to minimise the game's modals (Active Scripts etc.) by
   double-clicking the title. ([Demo](docs/qol-minimise-boxes.gif))
 
+
+- `/qol/colourful-terminal.js` This script will allow you to style terminal output with rudimentary styles, like `<red></red>`, `<bold></bold>`, `<blue></blue>` etc.. ([Demo](docs/qol-colour-terminal.gif))
+
 Quality of life scripts need running once to activate; they will end immediately, freeing up RAM, but continue to
 function.
 
