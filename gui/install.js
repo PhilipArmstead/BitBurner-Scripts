@@ -1,0 +1,37 @@
+const repo = "PhilipArmstead/BitBurner-Scripts"
+const branch = "main"
+const baseUrl = `https://raw.githubusercontent.com/${repo}/${branch}/`
+const config = "config.json"
+
+
+/** @param {NS} ns */
+export async function main (ns) {
+	const { dependencies } = await fetchConfig(ns)
+
+	for (const filename of dependencies) {
+		const path = `${baseUrl}${filename}`
+
+		try {
+			await ns.wget(`${path}?ts=${+new Date()}`, path)
+		} catch (e) {
+			ns.tprint(`ERROR: could not download ${path}`)
+		}
+	}
+
+	ns.tprint("SUCCESS: Install complete")
+}
+
+
+/** @param {NS} ns */
+async function fetchConfig (ns) {
+	try {
+		const dependenciesFile = `/gui/${config}`
+		await ns.wget(`${baseUrl}${dependenciesFile}?ts=${+new Date()}`, dependenciesFile)
+		const config = JSON.parse(ns.read(dependenciesFile))
+		await ns.rm(dependenciesFile)
+
+		return config
+	} catch (e) {
+		ns.tprint(`ERROR: Downloading and reading config file failed ${config}`)
+	}
+}

@@ -122,7 +122,7 @@ class ToastManagerInternal {
 
 	/** @return {Number} */
 	static get maxToasts () {
-		return 5
+		return 8
 	}
 
 
