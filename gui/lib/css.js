@@ -48,13 +48,13 @@ export const windowCss = `
 	}
 	
 	.window {
-		align-items: center;
+		align-items: flex-start;
 		display: inline-flex;
-		flex-wrap: wrap;
+		flex-direction: column;
 		left: 0;
 		min-height: 220px;
 		min-width: 220px;
-		overflow: auto;
+		overflow: hidden;
 		pointer-events: auto;
 		position: absolute;
 		resize: both;
@@ -143,8 +143,7 @@ export const windowCss = `
 	.window__content {
 		background: #FFF;
 		display: flex;
-		flex: 1 0 auto;
-		height: calc(100% - 26px);
+		flex: 0 1 100%;
 		overflow: auto;
 		padding: 6px;
 		width: 100%;
@@ -202,7 +201,8 @@ export const windowCss = `
 	
 	/** Apps **/
 	.window--server-list {
-		height: 60vh;
+		height: 70vh;
+		width: 30vw;
 	}
 
 	.server-list__container {
