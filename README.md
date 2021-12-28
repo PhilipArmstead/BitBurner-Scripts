@@ -22,7 +22,7 @@ function.
 ## GUI
 
 - `/gui/server-list.js` Render a searchable list of servers with one-click root, connect or backdoor
-  access. ([Demo](/docs/server-list.png))  
+  access. ([Demo](/docs/server-list.gif))  
   **To install** copy the contents of [gui/install.js](gui/install.js) anywhere on your device and execute it. 
 ## Utils
 
