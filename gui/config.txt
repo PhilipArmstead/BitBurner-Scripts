@@ -3,7 +3,7 @@
 		"/gui/lib/Window.js",
 		"/gui/lib/ToastManager.js",
 		"/gui/lib/constants.js",
-		"/lib/servers.js",
+		"/gui/lib/servers.js",
 		"/gui/lib/css.js"
 	]
 }
