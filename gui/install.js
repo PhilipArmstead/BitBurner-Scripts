@@ -12,6 +12,7 @@ export async function main (ns) {
 		const path = `${baseUrl}${filename}`
 
 		try {
+			ns.rm(filename)
 			await ns.wget(`${path}?ts=${+new Date()}`, filename)
 		} catch (e) {
 			ns.tprint(`ERROR: could not download ${path}`)
@@ -26,6 +27,7 @@ export async function main (ns) {
 async function fetchConfig (ns) {
 	try {
 		const dependenciesFile = `/gui/${configFile}`
+		ns.rm(dependenciesFile)
 		await ns.wget(`${baseUrl}${dependenciesFile}?ts=${+new Date()}`, dependenciesFile)
 		const config = JSON.parse(ns.read(dependenciesFile))
 		ns.rm(dependenciesFile)
