@@ -53,13 +53,25 @@ export const getServersWithThreadCapacity = (ns, threadsRequired, script) => {
 	let target
 	let i = 0
 
-	while (threadsRequired > 0 && (target = targets[i++])) {
-		const threadsAvailable = Math.floor((ns.getServerMaxRam(target) - ns.getServerUsedRam(target)) / scriptSize)
+	// Create a list of all servers which can handle this task by itself
+	const capableServers = targets.filter((server) =>
+		Math.floor((ns.getServerMaxRam(server) - ns.getServerUsedRam(server)) / scriptSize) >= threadsRequired)
 
-		if (threadsAvailable > 0) {
-			const threadsUsed = Math.min(threadsAvailable, threadsRequired)
-			servers.push({ host: target, threadCount: threadsUsed })
-			threadsRequired -= threadsUsed
+	if (capableServers.length) {
+		// And return the smallest
+		capableServers.sort((a, b) => ns.getServerMaxRam(a) - ns.getServerMaxRam(b))
+		servers.push({ host: capableServers[0], threadCount: threadsRequired })
+		threadsRequired = 0
+	} else {
+		// Otherwise split the job across multiple servers
+		while (threadsRequired > 0 && (target = targets[i++])) {
+			const threadsAvailable = Math.floor((ns.getServerMaxRam(target) - ns.getServerUsedRam(target)) / scriptSize)
+
+			if (threadsAvailable > 0) {
+				const threadsUsed = Math.min(threadsAvailable, threadsRequired)
+				servers.push({ host: target, threadCount: threadsUsed })
+				threadsRequired -= threadsUsed
+			}
 		}
 	}
 
@@ -99,10 +111,11 @@ export const getHackableServers = (ns, includePurchased = false) => {
 	const hackingLevel = ns.getHackingLevel()
 	const purchasedServers = ns.getPurchasedServers()
 
-	return getRootedServers(ns)
+	const servers = getRootedServers(ns)
 		.filter((server) => server !== "home")
 		.filter((server) => ns.getServerRequiredHackingLevel(server) <= hackingLevel)
-		.filter((server) => includePurchased || !purchasedServers.includes(server))
+
+	return includePurchased ? servers : servers.filter((server) => !purchasedServers.includes(server))
 }
 
 
