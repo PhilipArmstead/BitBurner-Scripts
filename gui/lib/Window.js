@@ -39,6 +39,20 @@ export class Window {
 	}
 
 
+	/** @param {{left: Number, top: Number}} position */
+	set position ({ left, top }) {
+		this.#left = left
+		this.#top = top
+		this.#updateWindowPosition()
+	}
+
+
+	/** @return {{left: Number, top: Number}} */
+	get position () {
+		return { left: this.#left, top: this.#top }
+	}
+
+
 	/**
 	 * @param {String} content
 	 * @param {"beforeend"|"beforebegin"|"afterend"|"afterbegin"} position

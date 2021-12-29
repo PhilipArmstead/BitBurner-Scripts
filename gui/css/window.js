@@ -193,37 +193,18 @@ export default `
 		text-shadow: none;
 		word-wrap: anywhere;
 	}
-	
+
 	.block-but-hidden {
 		display: block !important;
 		visibility: hidden !important;
 	}
-	
+
 	/** Apps **/
 	.window--server-list {
 		height: 70vh;
-		width: 30vw;
+		width: 22vw;
 	}
 
-	.server-list__container {
-		overflow-y: scroll;
-		position: relative;
-		width: 100%;
-	}
-	
-	.server-list__container::-webkit-scrollbar {
-		display: block;
-		width: 10px;
-	}
-	
-	.server-list__container::-webkit-scrollbar-track {
-		background-color: #00cc0021;
-	}
-	
-	.server-list__container::-webkit-scrollbar-thumb {
-		background-color: #0c0;
-	}
-	
 	.server-list__refresh, .server-list__search, .server-list__search-input {
 		background: none;
 		border: 1px solid;
@@ -340,6 +321,19 @@ export default `
 	
 	/** Themes */
 	/** Terminal */
+	.window.window--theme-terminal .window__content::-webkit-scrollbar {
+		display: block;
+		width: 10px;
+	}
+
+	.window.window--theme-terminal .window__content::-webkit-scrollbar-track {
+		background-color: #00cc0021;
+	}
+
+	.window.window--theme-terminal .window__content::-webkit-scrollbar-thumb {
+		background-color: #0c0;
+	}
+
 	.window.window--theme-terminal {
 		border: 1px solid #666;
 		font-family: Consolas, 'Liberation Mono', 'Fira Code', monospace;
