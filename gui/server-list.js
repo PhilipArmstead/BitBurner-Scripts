@@ -1,7 +1,7 @@
 import { Window } from "/gui/lib/Window.js"
 import ToastManager from "/gui/lib/ToastManager.js"
 import { icons } from "/gui/lib/constants.js"
-import { getServers } from "/gui/lib/servers.js"
+import { getServers } from "/lib/servers.js"
 
 
 /** @param {NS} ns **/
@@ -120,7 +120,7 @@ const getConnectionCommand = (server, ancestors) => ([
  **/
 const addRefreshListener = (container) => {
 	container.querySelector(".server-list__refresh").addEventListener("click", () => {
-		if (inputTerminalCommand("home; run /gui/toasts.js")) {
+		if (inputTerminalCommand("home; run /gui/server-list.js")) {
 			container.remove()
 		}
 	})
