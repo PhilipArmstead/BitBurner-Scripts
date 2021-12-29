@@ -4,6 +4,7 @@
 		"/gui/lib/ToastManager.js",
 		"/gui/lib/constants.js",
 		"/gui/lib/servers.js",
-		"/gui/lib/css.js"
+		"/gui/css/toasts.js",
+		"/gui/css/window.js",
 	]
 }

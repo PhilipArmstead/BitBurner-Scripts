@@ -1,4 +1,4 @@
-import { toastCss } from "/gui/lib/css.js"
+import css from "/gui/css/toasts.js"
 
 
 export default class {
@@ -135,7 +135,7 @@ class ToastManagerInternal {
 
 		stylesheet = doc.createElement("style")
 		stylesheet.id = "toasty-styles"
-		stylesheet.innerHTML = toastCss
+		stylesheet.innerHTML = css
 		doc.head.insertAdjacentElement("beforeend", stylesheet)
 	}
 

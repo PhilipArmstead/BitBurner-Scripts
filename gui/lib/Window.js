@@ -1,5 +1,5 @@
 import { stylesheetId, windowContainerId, windowFocusedClass } from "/gui/lib/constants.js"
-import { windowCss } from "/gui/lib/css.js"
+import css from "/gui/css/window.js"
 
 export class Window {
 	#left
@@ -231,7 +231,7 @@ export class Window {
 
 		stylesheet = doc.createElement("style")
 		stylesheet.id = stylesheetId
-		stylesheet.innerHTML = windowCss
+		stylesheet.innerHTML = css
 		doc.head.insertAdjacentElement("beforeend", stylesheet)
 	}
 }

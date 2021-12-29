@@ -120,7 +120,7 @@ const getConnectionCommand = (server, ancestors) => ([
  **/
 const addRefreshListener = (container) => {
 	container.querySelector(".server-list__refresh").addEventListener("click", () => {
-		if (inputTerminalCommand("home; run /gui/server-list.js")) {
+		if (inputTerminalCommand("home; run /gui/toasts.js")) {
 			container.remove()
 		}
 	})
