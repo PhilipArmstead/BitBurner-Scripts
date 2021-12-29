@@ -5,6 +5,7 @@
 		"/gui/lib/constants.js",
 		"/gui/lib/servers.js",
 		"/gui/css/toasts.js",
-		"/gui/css/window.js"
+		"/gui/css/window.js",
+		"/gui/server-list.js"
 	]
 }
