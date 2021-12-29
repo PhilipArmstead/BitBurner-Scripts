@@ -1,17 +1,18 @@
-export async function main(ns) {
-	if (typeof self.customBoundEvents !== 'object') {
-		self.customBoundEvents = {}
+export async function main() {
+	if (typeof globalThis.customBoundEvents !== 'object') {
+		globalThis.customBoundEvents = {}
 	}
 
-	if (self.customBoundEvents.tabber) {
+	if (globalThis.customBoundEvents.tabber) {
 		return
 	}
 
-	self.customBoundEvents.tabber = true
+	globalThis.customBoundEvents.tabber = true
 
-	self.document.body.addEventListener('keydown', ({ key, ctrlKey, shiftKey }) => {
+	const doc = globalThis['document']
+	doc.body.addEventListener('keydown', ({ key, ctrlKey, shiftKey }) => {
 		if (key.toLowerCase() === 'tab' && ctrlKey) {
-			const tabs = [].slice.call(self.document.querySelectorAll('[data-rbd-draggable-context-id] button'))
+			const tabs = [].slice.call(doc.querySelectorAll('[data-rbd-draggable-context-id] button'))
 			const activeTab = tabs.length ? tabs.find((tab) => tab.style.background) : null
 
 			if (activeTab) {
