@@ -3,9 +3,12 @@
 		"/gui/lib/Window.js",
 		"/gui/lib/ToastManager.js",
 		"/gui/lib/constants.js",
+		"/gui/lib/processes.js",
 		"/gui/lib/servers.js",
 		"/gui/css/toasts.js",
+		"/gui/css/script-monitor.js",
 		"/gui/css/window.js",
-		"/gui/server-list.js"
+		"/gui/server-list.js",
+		"/gui/script-monitor.js"
 	]
 }
