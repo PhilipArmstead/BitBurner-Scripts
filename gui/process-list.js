@@ -66,7 +66,7 @@ const createRootElement = () => {
 
 /**
  * @param {NS} ns
- * @param {{grow: String, hack: String, weaken: String}} ns
+ * @param {{grow: String, hack: String, weaken: String}} payloads
  * @return {String}
  **/
 const populateProcesses = (ns, payloads) => {
