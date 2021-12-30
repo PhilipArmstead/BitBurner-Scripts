@@ -268,6 +268,7 @@ export default `
 		display: inline-block;
 		padding: 1px 5px;
 		vertical-align: middle;
+		white-space: nowrap;
 	}
 
 	.server-list .server__item.server--filtered {
