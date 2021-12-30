@@ -73,9 +73,10 @@ const populateProcesses = (ns, payloads) => {
 	const processes = getRunningProcesses(ns).map(([host, tasks]) => [
 		...tasks
 			.filter(({ args }) => args.length)
-			.map(({ filename, args: [target], threads }) => ({
+			.map(({ filename, args, threads }) => ({
 				host,
-				target,
+				args,
+				target: args[0],
 				threads,
 				filename,
 				type: Object.keys(payloads).find((key) => payloads[key] === filename),
@@ -129,11 +130,11 @@ const renderProcessAsRow = (ns, { type, target, threads }, expiryDetails) => {
 
 /**
  * @param {NS} ns
- * @param {{ filename: String, target: String, host: String }} process
+ * @param {{ filename: String, args: String[], host: String }} process
  * @return {{duration: Number, timeRunning: Number}|null}
  */
-const getProcessExpiryDetails = (ns, { filename, host, target }) => {
-	const logs = ns.getScriptLogs(filename, host, target)
+const getProcessExpiryDetails = (ns, { filename, host, args }) => {
+	const logs = ns.getScriptLogs(filename, host, ...args)
 	let i = logs.length
 	let log
 
@@ -150,7 +151,7 @@ const getProcessExpiryDetails = (ns, { filename, host, target }) => {
 	const matches = log.match(/([0-9.])+ /g)
 	const time = matches.map(Number)
 	const duration = time.length > 1 ? time[0] * 60 + time[1] : time[0]
-	const { onlineRunningTime, offlineRunningTime } = ns.getRunningScript(filename, host, target)
+	const { onlineRunningTime, offlineRunningTime } = ns.getRunningScript(filename, host, ...args)
 	const timeRunning = onlineRunningTime + offlineRunningTime
 
 	return { duration, timeRunning }
