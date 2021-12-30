@@ -1,7 +1,6 @@
-import { Command, CommandScripts } from "./definitions.js"
 import { Window } from "/gui/lib/Window.js"
 import { getRunningProcesses } from "/gui/lib/processes.js"
-import css from "/gui/css/script-monitor.js"
+import css from "/gui/css/process-list.js"
 
 
 /** @param {NS} ns **/
@@ -71,42 +70,38 @@ const createRootElement = () => {
  * @return {String}
  **/
 const populateProcesses = (ns, payloads) => {
-	const uniqueProcesses = new Set()
-	const acceptedScripts = [CommandScripts[Command.GROW], CommandScripts[Command.HACK], CommandScripts[Command.WEAKEN]]
-	let markup = ""
+	const processes = getRunningProcesses(ns).map(([host, tasks]) => [
+		...tasks
+			.filter(({ args }) => args.length)
+			.map(({ filename, args: [target], threads }) => ({
+				host,
+				target,
+				threads,
+				filename,
+				type: Object.keys(payloads).find((key) => payloads[key] === filename),
+			}))
+			.filter(({ type }) => type)
+	]).flat()
 
-	// Pray you never have to edit this.
-	getRunningProcesses(ns).map(([host, tasks]) => [
-			...tasks
-				.filter(({ args }) => args.length)
-				.filter(({ filename }) => acceptedScripts.includes(filename))
-				.map(({ filename, args: [target], threads }) => ({
-					host,
-					target,
-					threads,
-					filename,
-					type: Object.keys(payloads).find((key) => payloads[key] === filename),
-				}))
-		])
-		.flat()
-		.filter(({ target }) => {
-			const isUnique = !uniqueProcesses.has(target)
-			uniqueProcesses.add(target)
-			return isUnique
-		})
-		.sort((a, b) => b.threads - a.threads)
-		.forEach((process) => {
-			markup += renderProcessAsRow(ns, process, getProcessExpiryDetails(ns, process))
-		})
+	for (let i = 0; i < processes.length; ++i) {
+		let j = processes.length
+		while (--j > i) {
+			if (processes[i].type === processes[j].type && processes[i].target === processes[j].target) {
+				processes[i].threads += processes[j].threads
+				processes.splice(j, 1)
+			}
+		}
+	}
 
-	return markup
+	return processes.sort((a, b) => b.threads - a.threads)
+		.map((process) => renderProcessAsRow(ns, process, getProcessExpiryDetails(ns, process))).join("")
 }
 
 
 /**
  * @param {NS} ns
  * @param {{ type: String, target: String, threads: Number }} process
- * {{ duration: Number, timeRunning: Number }?} expiryDetails
+ * @param {{ duration: Number, timeRunning: Number }?} expiryDetails
  * @return {String}
  **/
 const renderProcessAsRow = (ns, { type, target, threads }, expiryDetails) => {
@@ -118,10 +113,9 @@ const renderProcessAsRow = (ns, { type, target, threads }, expiryDetails) => {
 	row.insertAdjacentHTML("beforeend", `
 		<td class="process-cell process__item">
 			${target}
-			${
-		progress ?
-			`<span class="process__progress-bar" style="width: ${progress}%"></span` :
-			""
+			${progress ?
+		`<span class='process__progress-bar' style="width: ${progress}%"></span` :
+		""
 	}
 		</td>
 		<td class="process-cell process__threads">
@@ -136,7 +130,7 @@ const renderProcessAsRow = (ns, { type, target, threads }, expiryDetails) => {
 /**
  * @param {NS} ns
  * @param {{ filename: String, target: String, host: String }} process
- * @return {{ duration: Number, timeRunning: Number }}
+ * @return {{duration: Number, timeRunning: Number}|null}
  */
 const getProcessExpiryDetails = (ns, { filename, host, target }) => {
 	const logs = ns.getScriptLogs(filename, host, target)
@@ -153,10 +147,9 @@ const getProcessExpiryDetails = (ns, { filename, host, target }) => {
 		return null
 	}
 
-	const matches = log.match(/([0-9.,])+/g)
-	matches.splice(2)
-	const [minutes, seconds] = matches.map(Number)
-	const duration = minutes * 60 + seconds
+	const matches = log.match(/([0-9.])+ /g)
+	const time = matches.map(Number)
+	const duration = time.length > 1 ? time[0] * 60 + time[1] : time[0]
 	const { onlineRunningTime, offlineRunningTime } = ns.getRunningScript(filename, host, target)
 	const timeRunning = onlineRunningTime + offlineRunningTime
 

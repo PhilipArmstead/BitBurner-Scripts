@@ -26,7 +26,10 @@ function.
 
 - `/gui/server-list.js` Render a searchable list of servers with one-click root, connect or backdoor
   access. ([Demo](/docs/server-list.gif))  
-  **To install** copy the contents of [gui/install.js](gui/install.js) anywhere on your device and execute it. 
+
+- `/gui/process-list.js` Render a list of hack/grow/weaken processes in progress. To configure, amend the `payloads` keys on line 8 of `process-list.js` with the names of your attack scripts ([Demo](/docs/process-list.gif))  
+
+**To install** copy the contents of [gui/install.js](gui/install.js) anywhere on your device and execute it. 
 ## Utils
 
 - `/util/server/enslave.js` Copy a payload to all rooted servers and run it against a target.  
