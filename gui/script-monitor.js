@@ -6,17 +6,23 @@ import css from "/gui/css/script-monitor.js"
 
 /** @param {NS} ns **/
 export async function main (ns) {
+	const payloads = {
+		grow: "/attacks/grow.js",
+		hack: "/attacks/hack.js",
+		weaken: "/attacks/weaken.js",
+	}
+
 	insertStylesheet()
 	const rootElement = createRootElement()
 	const body = rootElement.querySelector(".process-list__body")
-	body.innerHTML = populateProcesses(ns)
+	body.innerHTML = populateProcesses(ns, payloads)
 
 	const win = new Window("Process list", { theme: "terminal", content: rootElement.outerHTML })
 	win.element.classList.add("window--script-monitor")
 
 	while (win.element.parentElement) {
 		const body = rootElement.querySelector(".process-list__body")
-		body.innerHTML = populateProcesses(ns)
+		body.innerHTML = populateProcesses(ns, payloads)
 		win.content = rootElement.outerHTML
 		await ns.sleep(200)
 	}
@@ -61,9 +67,10 @@ const createRootElement = () => {
 
 /**
  * @param {NS} ns
+ * @param {{grow: String, hack: String, weaken: String}} ns
  * @return {String}
  **/
-const populateProcesses = (ns) => {
+const populateProcesses = (ns, payloads) => {
 	const uniqueProcesses = new Set()
 	const acceptedScripts = [CommandScripts[Command.GROW], CommandScripts[Command.HACK], CommandScripts[Command.WEAKEN]]
 	let markup = ""
@@ -78,7 +85,7 @@ const populateProcesses = (ns) => {
 					target,
 					threads,
 					filename,
-					type: filename.replace("/attacks/", "").replace(".js", "")
+					type: Object.keys(payloads).find((key) => payloads[key] === filename),
 				}))
 		])
 		.flat()
@@ -99,7 +106,7 @@ const populateProcesses = (ns) => {
 /**
  * @param {NS} ns
  * @param {{ type: String, target: String, threads: Number }} process
- * @param {{ duration: Number, timeRunning: Number }?} expiryDetails
+ * {{ duration: Number, timeRunning: Number }?} expiryDetails
  * @return {String}
  **/
 const renderProcessAsRow = (ns, { type, target, threads }, expiryDetails) => {
@@ -143,7 +150,7 @@ const getProcessExpiryDetails = (ns, { filename, host, target }) => {
 	}
 
 	if (!log) {
-		return
+		return null
 	}
 
 	const matches = log.match(/([0-9.,])+/g)
