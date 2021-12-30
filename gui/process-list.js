@@ -87,7 +87,7 @@ const populateProcesses = (ns, payloads) => {
 	for (let i = 0; i < processes.length; ++i) {
 		let j = processes.length
 		while (--j > i) {
-			if (processes[i].type === processes[j].type && processes[i].target === processes[j].target) {
+			if (processes[i].type === processes[j].type && JSON.stringify(processes[i].args) === JSON.stringify(processes[j].args)) {
 				processes[i].threads += processes[j].threads
 				processes.splice(j, 1)
 			}
@@ -115,7 +115,7 @@ const renderProcessAsRow = (ns, { type, target, threads }, expiryDetails) => {
 		<td class="process-cell process__item">
 			${target}
 			${progress ?
-		`<span class='process__progress-bar' style="width: ${progress}%"></span` :
+		`<span class="process__progress-bar" style="width: ${progress}%"></span` :
 		""
 	}
 		</td>
