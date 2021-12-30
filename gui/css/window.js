@@ -340,7 +340,7 @@ export default `
 	}
 
 	.window.window--theme-terminal {
-		border: 1px solid #666;
+		border: 1px solid #4e4e4e6b;
 		font-family: Consolas, 'Liberation Mono', 'Fira Code', monospace;
 	}
 
@@ -352,6 +352,16 @@ export default `
 	.window.window--theme-terminal .window__content {
 		background: #000000d6;
 		color: #0c0;
+	}
+
+	.window.window--theme-terminal .btn {
+		background: none;
+		box-shadow: none;
+	}
+
+	.window.window--theme-terminal .window__cta-close g,
+	.window.window--theme-terminal .window__cta-minimise {
+		color: #A9A9A9;
 	}
 
 	/** Windows */

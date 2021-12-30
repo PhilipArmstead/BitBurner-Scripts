@@ -191,7 +191,7 @@ export class Window {
 					<div class="window__cta-group">
 						<button class="btn btn--small window__cta-minimise">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" class="icon icon--minimise">
-								<path d="m3 13h12v2h-12z" fill="#000" />
+								<path d="m3 13h12v2h-12z" fill="currentColor" />
 							</svg>
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" class="icon icon--restore">
 								<rect x="5" y="1.5" width="11" height="3" stroke="none" fill="#000"/>
@@ -204,7 +204,7 @@ export class Window {
 						</button>
 						<button class="btn btn--small window__cta-close">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
-								<g stroke="#000" stroke-width="1.5">
+								<g stroke="currentColor" stroke-width="1.5">
 									<line x1="3" y1="3" x2="15" y2="15" />
 									<line x2="3" y1="3" x1="15" y2="15" />
 								</g>
