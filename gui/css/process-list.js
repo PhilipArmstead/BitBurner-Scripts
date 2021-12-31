@@ -4,15 +4,40 @@ export default `
 		width: 300px;
 	}
 
-	.process-list__container thead td {
+	.process-list__container .process-list__head button {
+		background: none;
+		border: none;
 		color: #FFF;
+		font: inherit;
+		pointer-events: cursor;
 	}
 
-	.process-list {
-		width: 100%;
+	.process-list > * {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.process-list__head {
+		flex: 1 0 auto;
+		margin-bottom: 4px;
+	}
+
+	.process-list__head .process-cell {
+		display: block;
+	}
+
+	.process {
+		display: flex;
+		flex: 1 0 100%;
+	}
+
+	.process-cell {
+		padding: 2px 1px;
+		text-align: left;
 	}
 
 	.process-cell:last-child {
+		margin-left: auto;
 		text-align: right;
 	}
 
@@ -27,6 +52,8 @@ export default `
 
 	.process {
 		color: #00a5f3;
+		display: flex;
+		flex: 1 0 100%;
 		position: relative;
 	}
 

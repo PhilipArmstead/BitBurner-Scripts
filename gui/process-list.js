@@ -7,19 +7,30 @@ import { processListPayloads } from "/gui/config/process-list.config.js"
 /** @param {NS} ns **/
 export async function main (ns) {
 	const disableGrouping = ns.flags([["no-group", false]])["no-group"]
+	const sort = {
+		param: "expiry",
+		isDescending: true,
+	}
 
 	insertStylesheet()
 	const rootElement = createRootElement()
-	const body = rootElement.querySelector(".process-list__body")
-	body.innerHTML = populateProcesses(ns, disableGrouping)
-
 	const win = new Window("Process list", { theme: "terminal", content: rootElement.outerHTML })
 	win.element.classList.add("window--script-monitor")
 
+	Array.from(win.element.querySelectorAll("[data-sort]")).forEach((element) => {
+		const param = element.dataset.sort
+		element.addEventListener("click", () => {
+			if (sort.param === param) {
+				sort.isDescending = !sort.isDescending
+			} else {
+				sort.param = param
+				sort.isDescending = true
+			}
+		})
+	})
+
 	while (win.element.parentElement) {
-		const body = rootElement.querySelector(".process-list__body")
-		body.innerHTML = populateProcesses(ns, disableGrouping)
-		win.content = rootElement.outerHTML
+		win.element.querySelector(".process-list__body").innerHTML = populateProcesses(ns, disableGrouping, sort)
 		await ns.sleep(200)
 	}
 }
@@ -46,15 +57,13 @@ const createRootElement = () => {
 	const rootElement = globalThis["document"].createElement("div")
 	rootElement.classList.add("process-list__container")
 	rootElement.insertAdjacentHTML("beforeend", `
-		<table class="process-list">
-			<thead class="process-list__head">
-				<tr>
-					<td>Target</td>
-					<td>Threads</td>
-				</tr>
-			</thead>
-			<tbody class="process-list__body"></tbody>
-		</table>
+		<div class="process-list">
+			<div class="process-list__head">
+				<button class="process-cell" data-sort="target">Target</button>
+				<button class="process-cell" data-sort="threads">Threads</button>
+			</div>
+			<div class="process-list__body"></div>
+		</div>
 	`)
 
 	return rootElement
@@ -64,9 +73,10 @@ const createRootElement = () => {
 /**
  * @param {NS} ns
  * @param {Boolean} disableGrouping
+ * @param {{param: String, isDescending: Boolean}} sort
  * @return {String}
  **/
-const populateProcesses = (ns, disableGrouping) => {
+const populateProcesses = (ns, disableGrouping, sort) => {
 	const processes = getRunningProcesses(ns).map(([host, tasks]) => [
 		...tasks
 			.filter(({ args }) => args.length)
@@ -80,6 +90,7 @@ const populateProcesses = (ns, disableGrouping) => {
 			}))
 			.filter(({ type }) => type)
 	]).flat()
+		.map((process) => ({ ...process, expiry: getProcessExpiryDetails(ns, process) }))
 
 	if (!disableGrouping) {
 		for (let i = 0; i < processes.length; ++i) {
@@ -94,34 +105,45 @@ const populateProcesses = (ns, disableGrouping) => {
 		}
 	}
 
-	return processes.sort((a, b) => b.threads - a.threads)
-		.map((process) => renderProcessAsRow(ns, process, getProcessExpiryDetails(ns, process))).join("")
+	return processes.sort((a, b) => {
+			const valueA = a[sort.param]
+			const valueB = b[sort.param]
+
+			if (sort.param === "expiry") {
+				return valueB.timeRunning / valueB.duration - valueA.timeRunning / valueA.duration
+			} else {
+				if (typeof valueA === "string") {
+					return sort.isDescending ? valueB.localeCompare(valueA) : valueA.localeCompare(valueB)
+				} else {
+					return sort.isDescending ? valueB - valueA : valueA - valueB
+				}
+			}
+		})
+		.map((process) => renderProcessAsRow(ns, process)).join("")
 }
 
 
 /**
  * @param {NS} ns
- * @param {{ type: String, target: String, hosts: String[], threads: Number }} process
- * @param {{ duration: Number, timeRunning: Number }?} expiryDetails
+ * @param {{ type: String, target: String, hosts: String[], threads: Number, expiry: { duration: Number, timeRunning: Number }? }} process
  * @return {String}
  **/
-const renderProcessAsRow = (ns, { type, target, hosts, threads }, expiryDetails) => {
-	const row = globalThis["document"].createElement("tr")
-	const progress = expiryDetails ?
-		Math.min(100, expiryDetails.timeRunning / expiryDetails.duration * 100).toFixed(2) :
-		null
+const renderProcessAsRow = (ns, { type, target, hosts, threads, expiry }) => {
+	const row = globalThis["document"].createElement("div")
+	const progress = expiry ? Math.min(100, expiry.timeRunning / expiry.duration * 100).toFixed(2) : null
+
 	row.classList.add("process", `process--type-${type}`)
 	row.insertAdjacentHTML("beforeend", `
-		<td class="process-cell process__item" title="Running on ${hosts.join(', ')}">
+		<div class="process-cell process__item" title="Running on ${hosts.join(", ")}">
 			${target}
 			${progress ?
-		`<span class="process__progress-bar" style="width: ${progress}%"></span` :
+		`<span class="process__progress-bar" style="width: ${progress}%"></span>` :
 		""
 	}
-		</td>
-		<td class="process-cell process__threads">
+		</div>
+		<div class="process-cell process__threads">
 			${threads.toLocaleString()}
-		</td>
+		</div>
 	`)
 
 	return row.outerHTML
