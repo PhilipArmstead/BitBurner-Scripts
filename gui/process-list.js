@@ -6,6 +6,8 @@ import { processListPayloads } from "/gui/config/process-list.config.js"
 
 /** @param {NS} ns **/
 export async function main (ns) {
+	["disableLog", "getServerUsedRam", "scan", "sleep"].forEach(ns.disableLog)
+
 	const disableGrouping = ns.flags([["no-group", false]])["no-group"]
 	const sort = {
 		param: "expiry",
