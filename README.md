@@ -27,7 +27,8 @@ function.
 - `/gui/server-list.js` Render a searchable list of servers with one-click root, connect or backdoor
   access. ([Demo](/docs/server-list.gif))  
 
-- `/gui/process-list.js` Render a list of hack/grow/weaken processes in progress. To configure, amend the `payloads` keys on line 8 of `process-list.js` with the names of your attack scripts ([Demo](/docs/process-list.gif))  
+- `/gui/process-list.js` Render a list of hack/grow/weaken processes in progress. To configure, amend the object exported from `/gui/config/process-list.config.js` with the names of your processes. ([Demo](/docs/process-list.gif))  
+Also supports the `--no-group` flag if you want to see unique processes across multiple servers.
 
 **To install** copy the contents of [gui/install.js](gui/install.js) anywhere on your device and execute it. 
 ## Utils

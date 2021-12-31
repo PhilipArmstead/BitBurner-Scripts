@@ -1,27 +1,24 @@
 import { Window } from "/gui/lib/Window.js"
 import { getRunningProcesses } from "/gui/lib/processes.js"
 import css from "/gui/css/process-list.js"
+import { processListPayloads } from "/gui/config/process-list.config.js"
 
 
 /** @param {NS} ns **/
 export async function main (ns) {
-	const payloads = {
-		grow: "/attacks/grow.js",
-		hack: "/attacks/hack.js",
-		weaken: "/attacks/weaken.js",
-	}
+	const disableGrouping = ns.flags([["no-group", false]])["no-group"]
 
 	insertStylesheet()
 	const rootElement = createRootElement()
 	const body = rootElement.querySelector(".process-list__body")
-	body.innerHTML = populateProcesses(ns, payloads)
+	body.innerHTML = populateProcesses(ns, disableGrouping)
 
 	const win = new Window("Process list", { theme: "terminal", content: rootElement.outerHTML })
 	win.element.classList.add("window--script-monitor")
 
 	while (win.element.parentElement) {
 		const body = rootElement.querySelector(".process-list__body")
-		body.innerHTML = populateProcesses(ns, payloads)
+		body.innerHTML = populateProcesses(ns, disableGrouping)
 		win.content = rootElement.outerHTML
 		await ns.sleep(200)
 	}
@@ -66,30 +63,33 @@ const createRootElement = () => {
 
 /**
  * @param {NS} ns
- * @param {{grow: String, hack: String, weaken: String}} payloads
+ * @param {Boolean} disableGrouping
  * @return {String}
  **/
-const populateProcesses = (ns, payloads) => {
+const populateProcesses = (ns, disableGrouping) => {
 	const processes = getRunningProcesses(ns).map(([host, tasks]) => [
 		...tasks
 			.filter(({ args }) => args.length)
 			.map(({ filename, args, threads }) => ({
-				host,
+				hosts: [host],
 				args,
 				target: args[0],
 				threads,
 				filename,
-				type: Object.keys(payloads).find((key) => payloads[key] === filename),
+				type: Object.keys(processListPayloads).find((key) => processListPayloads[key].includes(filename)),
 			}))
 			.filter(({ type }) => type)
 	]).flat()
 
-	for (let i = 0; i < processes.length; ++i) {
-		let j = processes.length
-		while (--j > i) {
-			if (processes[i].type === processes[j].type && JSON.stringify(processes[i].args) === JSON.stringify(processes[j].args)) {
-				processes[i].threads += processes[j].threads
-				processes.splice(j, 1)
+	if (!disableGrouping) {
+		for (let i = 0; i < processes.length; ++i) {
+			let j = processes.length
+			while (--j > i) {
+				if (processes[i].type === processes[j].type && JSON.stringify(processes[i].args) === JSON.stringify(processes[j].args)) {
+					processes[i].threads += processes[j].threads
+					processes[i].hosts = [...processes[i].hosts, ...processes[j].hosts]
+					processes.splice(j, 1)
+				}
 			}
 		}
 	}
@@ -101,18 +101,18 @@ const populateProcesses = (ns, payloads) => {
 
 /**
  * @param {NS} ns
- * @param {{ type: String, target: String, threads: Number }} process
+ * @param {{ type: String, target: String, hosts: String[], threads: Number }} process
  * @param {{ duration: Number, timeRunning: Number }?} expiryDetails
  * @return {String}
  **/
-const renderProcessAsRow = (ns, { type, target, threads }, expiryDetails) => {
+const renderProcessAsRow = (ns, { type, target, hosts, threads }, expiryDetails) => {
 	const row = globalThis["document"].createElement("tr")
 	const progress = expiryDetails ?
 		Math.min(100, expiryDetails.timeRunning / expiryDetails.duration * 100).toFixed(2) :
 		null
 	row.classList.add("process", `process--type-${type}`)
 	row.insertAdjacentHTML("beforeend", `
-		<td class="process-cell process__item">
+		<td class="process-cell process__item" title="Running on ${hosts.join(', ')}">
 			${target}
 			${progress ?
 		`<span class="process__progress-bar" style="width: ${progress}%"></span` :
@@ -130,11 +130,11 @@ const renderProcessAsRow = (ns, { type, target, threads }, expiryDetails) => {
 
 /**
  * @param {NS} ns
- * @param {{ filename: String, args: String[], host: String }} process
+ * @param {{ filename: String, args: String[], hosts: String[] }} process
  * @return {{duration: Number, timeRunning: Number}|null}
  */
-const getProcessExpiryDetails = (ns, { filename, host, args }) => {
-	const logs = ns.getScriptLogs(filename, host, ...args)
+const getProcessExpiryDetails = (ns, { filename, hosts, args }) => {
+	const logs = ns.getScriptLogs(filename, hosts[0], ...args)
 	let i = logs.length
 	let log
 
@@ -151,7 +151,7 @@ const getProcessExpiryDetails = (ns, { filename, host, args }) => {
 	const matches = log.match(/([0-9.])+ /g)
 	const time = matches.map(Number)
 	const duration = time.length > 1 ? time[0] * 60 + time[1] : time[0]
-	const { onlineRunningTime, offlineRunningTime } = ns.getRunningScript(filename, host, ...args)
+	const { onlineRunningTime, offlineRunningTime } = ns.getRunningScript(filename, hosts[0], ...args)
 	const timeRunning = onlineRunningTime + offlineRunningTime
 
 	return { duration, timeRunning }
