@@ -336,7 +336,7 @@ export default `
 	}
 
 	.window.window--theme-terminal .window__content::-webkit-scrollbar-thumb {
-		background-color: #0c0;
+		background-color: #0f0;
 	}
 
 	.window.window--theme-terminal {
@@ -351,7 +351,7 @@ export default `
 
 	.window.window--theme-terminal .window__content {
 		background: #000000d6;
-		color: #0c0;
+		color: #0f0;
 	}
 
 	.window.window--theme-terminal .btn {

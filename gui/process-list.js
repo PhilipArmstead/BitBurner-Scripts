@@ -6,8 +6,6 @@ import { processListPayloads } from "/gui/config/process-list.config.js"
 
 /** @param {NS} ns **/
 export async function main (ns) {
-	["disableLog", "getServerUsedRam", "scan", "sleep"].forEach(ns.disableLog)
-
 	const disableGrouping = ns.flags([["no-group", false]])["no-group"]
 	const sort = {
 		param: "expiry",
@@ -161,6 +159,17 @@ const getProcessExpiryDetails = (ns, { filename, hosts, args }) => {
 	const logs = ns.getScriptLogs(filename, hosts[0], ...args)
 	let i = logs.length
 	let log
+	const { onlineRunningTime, offlineRunningTime } = ns.getRunningScript(filename, hosts[0], ...args)
+	const timeRunning = onlineRunningTime + offlineRunningTime
+	const pattern = new RegExp(/^sleep:.+?([\d.]+)/)
+	const duration = logs.reduce((total, logOutput) => {
+		const match = logOutput.match(pattern)
+		return total + (match?.[1] ? Number(match?.[1]) : 0)
+	}, 0) / 1000
+	const returnValue = {
+		duration,
+		timeRunning
+	}
 
 	while (!log && i--) {
 		if (logs[i].indexOf(": Executing") !== -1) {
@@ -168,15 +177,10 @@ const getProcessExpiryDetails = (ns, { filename, hosts, args }) => {
 		}
 	}
 
-	if (!log) {
-		return null
+	if (log) {
+		const time = log.match(/([0-9.])+ /g).map(Number)
+		returnValue.duration += time.length > 1 ? time[0] * 60 + time[1] : time[0]
 	}
 
-	const matches = log.match(/([0-9.])+ /g)
-	const time = matches.map(Number)
-	const duration = time.length > 1 ? time[0] * 60 + time[1] : time[0]
-	const { onlineRunningTime, offlineRunningTime } = ns.getRunningScript(filename, hosts[0], ...args)
-	const timeRunning = onlineRunningTime + offlineRunningTime
-
-	return { duration, timeRunning }
+	return returnValue
 }
