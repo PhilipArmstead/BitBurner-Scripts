@@ -140,8 +140,7 @@ export default `
 	}
 
 	.window__cta-group .icon {
-		height: inherit;
-		max-width: 100%;
+		width: 14px;
 	}
 
 	.window__cta-group .icon--restore {
