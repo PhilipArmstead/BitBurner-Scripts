@@ -25,9 +25,9 @@ function.
 ## GUI
 
 - `/gui/server-list.js` Render a searchable list of servers with one-click root, connect or backdoor
-  access. ([Demo](/docs/server-list.gif))  
-
+  access. ([Demo](/docs/server-list.gif))
 - `/gui/process-list.js` Render a list of hack/grow/weaken processes in progress. ([Demo](/docs/process-list.gif)) ([Usage guide](/docs/ProcessList.md))
+- `/gui/macros.js` Bind configurable Terminal commands to clickable buttons. ([Usage guide](/docs/Macros.md))
 
 **To install** copy the contents of [gui/install.js](gui/install.js) anywhere on your device and execute it. 
 ## Utils

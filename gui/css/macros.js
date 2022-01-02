@@ -20,10 +20,11 @@ export default `
 	.window--macros .macro__cta {
 		background: none;
 		border: none;
+		border-radius: 2px
 		box-shadow: 0 0 0px 1px #AAAAAA54;
 		color: inherit;
 		cursor: pointer;
-		padding: 6px;
+		padding: 6px 8px;
 		transition: box-shadow .2s linear;
 	}
 
