@@ -158,16 +158,4 @@ export const getServers = (ns) => runScan(ns).tree
  * @param {NS} ns
  * @return {String[]}
  **/
-export const getServersFlattened = (ns) => [
-	"home", "n00dles", "zer0", "phantasy", "comptek", "summit-uni", "catalyst", "avmnite-02h",
-	"netlink", "rho-construction", "omnitek", "snap-fitness", "crush-fitness", "aevum-police",
-	"syscore", "zb-institute", "alpha-ent", "millenium-fitness", "galactic-cyber", "aerocorp",
-	"fulcrumtech", "4sigma", "b-and-a", "megacorp", "The-Cave", "kuai-gong", "blade", "ecorp",
-	"iron-gym", "johnson-ortho", "darkweb", "clarkinc", "CSEC", "rothman-uni", "max-hardware",
-	"zeus-med", "global-pharm", "vitalife", "zb-def", "omnia", "taiyang-digital", "microdyne",
-	"icarus", "the-hub", "nwo", "applied-energetics", "helios", "run4theh111z", "univ-energy",
-	".", "nova-med", "solaris", "stormtech", "unitalife", "defcomm", "infocomm", "titan-labs",
-	"foodnstuff", "powerhouse-fitness", "fulcrumassets", "I.I.I.I", "nectar-net", "omega-net",
-	"harakiri-sushi", "sigma-cosmetics", "joesguns", "hong-fang-tea", "lexo-corp", "deltaone",
-	"neo-net", ...ns.getPurchasedServers()
-]
+export const getServersFlattened = (ns) => [...runScan(ns).found.values()]
