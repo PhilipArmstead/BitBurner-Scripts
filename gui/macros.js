@@ -16,7 +16,7 @@ export async function main (ns) {
 
 	const rootElement = createRootElement()
 	populateMacroList(rootElement.firstElementChild)
-	const win = new Window("Process list", { theme: "terminal" })
+	const win = new Window("Macros", { theme: "terminal" })
 	win.element.classList.add("window--macros")
 	win.element.querySelector(".window__content").insertAdjacentElement("beforeend", rootElement)
 }
