@@ -129,6 +129,7 @@ export default `
 		align-items: center;
 		display: flex;
 		flex: 0 1 100%;
+		justify-content: flex-end;
 		margin-left: auto;
 	}
 
@@ -139,6 +140,7 @@ export default `
 	}
 
 	.window__cta-group .icon {
+		height: inherit;
 		max-width: 100%;
 	}
 
