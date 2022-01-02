@@ -128,7 +128,7 @@ export default `
 	.window__cta-group {
 		align-items: center;
 		display: flex;
-		flex: 1 0 auto;
+		flex: 0 1 100%;
 		margin-left: auto;
 	}
 

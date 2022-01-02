@@ -203,7 +203,7 @@ export class Window {
 							</svg>
 						</button>
 						<button class="btn btn--small window__cta-close">
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+							<svg class="icon icon--close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
 								<g stroke="currentColor" stroke-width="1.5">
 									<line x1="3" y1="3" x2="15" y2="15" />
 									<line x2="3" y1="3" x1="15" y2="15" />
