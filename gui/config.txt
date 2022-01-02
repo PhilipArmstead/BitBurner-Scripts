@@ -5,10 +5,13 @@
 		"/gui/lib/constants.js",
 		"/gui/lib/processes.js",
 		"/gui/lib/servers.js",
-		"/gui/css/toasts.js",
+		"/gui/lib/terminal.js",
+		"/gui/css/macros.js",
 		"/gui/css/process-list.js",
+		"/gui/css/toasts.js",
 		"/gui/css/window.js",
-		"/gui/server-list.js",
-		"/gui/process-list.js"
+		"/gui/macros.js",
+		"/gui/process-list.js",
+		"/gui/server-list.js"
 	]
 }

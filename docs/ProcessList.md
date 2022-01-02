@@ -16,7 +16,7 @@ These arrays can be modified to list the filenames that you want to associate wi
 This file is not destroyed on re-install and does not need to be recreated.
 
 ## Usage
-`run /gui/process-list.js` will launch the script and show you your runni.g processes
+`run /gui/process-list.js` will launch the script and show you your running processes.
 
 ## Flags
 - `--no-group` Right now, non-unique processes spread across multiple servers will be grouped (it is assumed they are part of the same attack). This flag will prevent that grouping and show all processes individually.

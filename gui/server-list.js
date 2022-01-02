@@ -1,7 +1,7 @@
 import { Window } from "/gui/lib/Window.js"
-import ToastManager from "/gui/lib/ToastManager.js"
 import { icons } from "/gui/lib/constants.js"
 import { getServers } from "/gui/lib/servers.js"
+import { inputTerminalCommand } from "/gui/lib/terminal.js"
 
 
 /** @param {NS} ns **/
@@ -28,7 +28,7 @@ const populateServers = (ns, rootElement) => {
 
 	const win = new Window("Server list", { theme: "terminal", content: rootElement.outerHTML })
 	addEventListenersToListItems(ns, win.element)
-	win.element.classList.add('window--server-list')
+	win.element.classList.add("window--server-list")
 }
 
 
@@ -192,29 +192,6 @@ const addBackdoorListener = (server, ancestors) => {
 	server.querySelector(".icon--backdoored")?.addEventListener("click", () => {
 		inputTerminalCommand(`${getConnectionCommand(server, ancestors)} backdoor`)
 	})
-}
-
-
-/**
- * @param {String} command
- * @return {Boolean}
- **/
-const inputTerminalCommand = (command) => {
-	const terminalInput = globalThis["document"].getElementById("terminal-input")
-	if (!terminalInput) {
-		ToastManager.instance.add("The terminal must be visible")
-	} else if (terminalInput.hasAttribute("disabled")) {
-		ToastManager.instance.add("The terminal must not be in use")
-	} else {
-		terminalInput.value = command
-		const handler = Object.keys(terminalInput)[1]
-		terminalInput[handler].onChange({ target: terminalInput })
-		terminalInput[handler].onKeyDown({ keyCode: 13, preventDefault: () => null })
-
-		return true
-	}
-
-	return false
 }
 
 

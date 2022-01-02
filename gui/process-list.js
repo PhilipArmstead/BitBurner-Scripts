@@ -164,7 +164,7 @@ const getProcessExpiryDetails = (ns, { filename, hosts, args }) => {
 	const pattern = new RegExp(/^sleep:.+?([\d.]+)/)
 	const duration = logs.reduce((total, logOutput) => {
 		const match = logOutput.match(pattern)
-		return total + (match?.[1] ? Number(match?.[1]) : 0)
+		return total + (!!match ? Number(match[1]) : 0)
 	}, 0) / 1000
 	const returnValue = {
 		duration,

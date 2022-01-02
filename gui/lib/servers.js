@@ -104,6 +104,27 @@ export const serversForEach = (ns, fn) => {
 
 /**
  * @param {NS} ns
+ * @param {{host: String, threadCount: Number}[]} slaves
+ * @param {String} payload
+ * @param {String[]?} args
+ * @return {Boolean}
+ */
+export const deployPayloadToSlaves = async (ns, slaves, payload, args = []) => {
+	for (const { host, threadCount } of slaves) {
+		if (threadCount < 1) {
+			return false
+		}
+
+		await ns.scp(payload, host)
+		ns.exec(payload, host, threadCount, ...args)
+	}
+
+	return true
+}
+
+
+/**
+ * @param {NS} ns
  * @param {Boolean?} includePurchased
  * @return {String[]}
  **/
@@ -137,4 +158,16 @@ export const getServers = (ns) => runScan(ns).tree
  * @param {NS} ns
  * @return {String[]}
  **/
-export const getServersFlattened = (ns) => [...runScan(ns).found.values()]
+export const getServersFlattened = (ns) => [
+	"home", "n00dles", "zer0", "phantasy", "comptek", "summit-uni", "catalyst", "avmnite-02h",
+	"netlink", "rho-construction", "omnitek", "snap-fitness", "crush-fitness", "aevum-police",
+	"syscore", "zb-institute", "alpha-ent", "millenium-fitness", "galactic-cyber", "aerocorp",
+	"fulcrumtech", "4sigma", "b-and-a", "megacorp", "The-Cave", "kuai-gong", "blade", "ecorp",
+	"iron-gym", "johnson-ortho", "darkweb", "clarkinc", "CSEC", "rothman-uni", "max-hardware",
+	"zeus-med", "global-pharm", "vitalife", "zb-def", "omnia", "taiyang-digital", "microdyne",
+	"icarus", "the-hub", "nwo", "applied-energetics", "helios", "run4theh111z", "univ-energy",
+	".", "nova-med", "solaris", "stormtech", "unitalife", "defcomm", "infocomm", "titan-labs",
+	"foodnstuff", "powerhouse-fitness", "fulcrumassets", "I.I.I.I", "nectar-net", "omega-net",
+	"harakiri-sushi", "sigma-cosmetics", "joesguns", "hong-fang-tea", "lexo-corp", "deltaone",
+	"neo-net", ...ns.getPurchasedServers()
+]
