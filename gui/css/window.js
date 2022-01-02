@@ -127,7 +127,6 @@ export default `
 	.window__cta-group {
 		align-items: center;
 		display: flex;
-		flex: 1 0 auto;
 		margin-left: auto;
 	}
 
@@ -135,6 +134,10 @@ export default `
 		background-position: 50% 50%;
 		background-size: 14px auto;
 		flex: 0 1 auto;
+	}
+
+	.window__cta-group .icon {
+		max-width: 100%;
 	}
 
 	.window__cta-group .icon--restore {
