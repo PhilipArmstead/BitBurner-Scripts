@@ -64,6 +64,7 @@ export default `
 
 	.window--minimised {
 		height: auto !important;
+		max-width: 200px;
 		min-height: 0;
 		min-width: 0;
 		resize: none;
@@ -127,6 +128,7 @@ export default `
 	.window__cta-group {
 		align-items: center;
 		display: flex;
+		flex: 1 0 auto;
 		margin-left: auto;
 	}
 
