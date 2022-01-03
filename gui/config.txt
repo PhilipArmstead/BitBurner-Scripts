@@ -8,6 +8,7 @@
 		"/gui/lib/constants.js",
 		"/gui/lib/cracks.js",
 		"/gui/lib/processes.js",
+		"/gui/lib/Prompt.js",
 		"/gui/lib/servers.js",
 		"/gui/lib/terminal.js",
 		"/gui/lib/ToastManager.js",
