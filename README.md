@@ -24,6 +24,7 @@ function.
   access. ([Demo](/docs/server-list.gif))
 - `/gui/process-list.js` Render a list of hack/grow/weaken processes in progress. ([Demo](/docs/process-list.gif)) ([Usage guide](/docs/ProcessList.md))
 - `/gui/macros.js` Bind configurable Terminal commands to clickable buttons. ([Usage guide](/docs/Macros.md))
+- `/gui/lib/Prompt.js` An importable library allowing for user-inputs inside scripts. ([Demo](/docs/user-prompt.gif)) ([Usage guide](/docs/Prompts.md))
 
 **To install** copy the contents of [gui/install.js](gui/install.js) anywhere on your device and execute it. 
 ## Utils
