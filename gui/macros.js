@@ -11,28 +11,31 @@ export async function main (ns) {
 	new AppWindow(app)
 	app.mount({
 		template: `
-			<div>
-				<app-window title="Macros" class="window--macros" @window:close="kill">
-					<div class="macro-list">
-						<div v-for="[label, commands] in listItems" :key="label" class="macro">
-							<button class="macro__cta" @click="inputTerminalCommands(commands)">{{ label }}</button>
-						</div>
+			<app-window title="Macros" :can-refresh="true" class="window--macros" @window:close="kill" @window:refresh="refresh">
+				<div class="macro-list">
+					<div v-for="[label, commands] in listItems" :key="label" class="macro">
+						<button class="macro__cta" @click="inputTerminalCommands(commands)">{{ label }}</button>
 					</div>
-				</app-window>
-			</div>
+				</div>
+			</app-window>
 		`,
 		setup () {
 			const kill = () => app.unmount()
+			const refresh = () => {
+				if (inputTerminalCommands(['home', 'run /gui/macros.js'])) {
+					kill()
+				}
+			}
 			const listItems = Object.entries(macroList).map(([label, commands]) => [label, commands])
 
-			return { kill, listItems, inputTerminalCommands }
+			return { listItems, inputTerminalCommands, kill, refresh }
 		},
 		style: `
 			.window--macros {
 				.window {
 					width: 10vw;
 				}
-			
+
 				.window__content {
 					flex: 100%;
 				}

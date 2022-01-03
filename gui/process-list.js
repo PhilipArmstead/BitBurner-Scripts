@@ -146,22 +146,22 @@ export async function main (ns) {
 					width: 300px;
 				}
 			}
-			
+
 			.process-list {
 				> * {
 					display: flex;
 					flex-wrap: wrap;
 				}
-			
+
 				&__head {
 					flex: 1 0 auto;
 					margin-bottom: 4px;
-			
+
 					.process-cell {
 						display: block;
 					}
 				}
-			
+
 				.process-list__cta {
 					background: none;
 					border: none;
@@ -170,11 +170,11 @@ export async function main (ns) {
 					font: inherit;
 					pointer-events: auto;
 				}
-			
+
 				.process-cell {
 					padding: 2px 1px;
 					text-align: left;
-			
+
 					&:last-child {
 						margin-left: auto;
 						text-align: right;

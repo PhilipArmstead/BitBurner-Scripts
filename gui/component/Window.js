@@ -1,5 +1,6 @@
 import BaseComponent from "/gui/component/BaseComponent.js"
 
+
 const component = {
 	name: "app-window",
 	template: `
@@ -19,6 +20,16 @@ const component = {
 					<div class="window__toolbar" @mousedown="beginGrabbing">
 						<h1 class="window__title">{{ title }}</h1>
 						<div class="window__cta-group">
+							<button
+								v-show="canRefresh"
+								class="btn btn--small window__cta-refresh"
+								@click="$emit('window:refresh')"
+								@mousedown.stop
+							>
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 65" class="icon icon--refresh">
+									<path fill="currentColor" d="M32.5 4.999a27.31 27.31 0 0 0-14.699 4.282l-5.75-5.75v16.11h16.11l-6.395-6.395a21.834 21.834 0 0 1 10.734-2.82c12.171 0 22.073 9.902 22.073 22.074 0 2.899-.577 5.664-1.599 8.202l4.738 2.762A27.299 27.299 0 0 0 60 32.5C60 17.336 47.663 4.999 32.5 4.999zM43.227 51.746c-3.179 1.786-6.826 2.827-10.726 2.827-12.171 0-22.073-9.902-22.073-22.073 0-2.739.524-5.35 1.439-7.771l-4.731-2.851A27.34 27.34 0 0 0 5 32.5C5 47.664 17.336 60 32.5 60c5.406 0 10.434-1.584 14.691-4.289l5.758 5.759V45.358H36.838l6.389 6.388z"/>
+								</svg>
+							</button>
 							<button
 								class="btn btn--small window__cta-minimise"
 								@click="isMinimised = !isMinimised"
@@ -41,7 +52,7 @@ const component = {
 								@click="$emit('window:close')"
 								@mousedown.stop
 							>
-								<svg class="icon icon--close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" class="icon icon--close">
 									<g stroke="currentColor" stroke-width="1.5">
 										<line x1="3" y1="3" x2="15" y2="15" />
 										<line x2="3" y1="3" x1="15" y2="15" />
@@ -67,6 +78,10 @@ const component = {
 			validator (value) {
 				return ["win95", "terminal"].includes(value)
 			}
+		},
+		canRefresh: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	setup () {
@@ -189,11 +204,11 @@ const component = {
 			top: 0;
 			width: 100%;
 			z-index: 9999;
-		
+
 			* {
 				box-sizing: border-box;
 			}
-		
+
 			.window {
 				align-items: flex-start;
 				display: inline-flex;
@@ -260,7 +275,7 @@ const component = {
 					min-width: 0;
 					resize: none;
 					width: auto !important;
-		
+
 					.window__content,
 					.window__cta-group .icon--minimise {
 						display: none;
@@ -274,7 +289,7 @@ const component = {
 					user-select: none;
 					width: 100%;
 				}
-		
+
 				&__title {
 					align-self: center;
 					flex: 0 1 100%;
@@ -286,21 +301,20 @@ const component = {
 					text-overflow: ellipsis;
 					white-space: nowrap;
 				}
-		
+
 				&__cta-group {
 					align-items: center;
 					display: flex;
 					flex: 0 1 100%;
 					justify-content: flex-end;
 					margin-left: auto;
-		
-		
+
 					> * {
 						background-position: 50% 50%;
 						background-size: 14px auto;
 						flex: 0 1 auto;
 					}
-		
+
 					.icon {
 						width: 14px;
 		
@@ -309,7 +323,7 @@ const component = {
 						}
 					}
 				}
-		
+
 				&__icon {
 					align-self: center;
 					max-height: 16px;
@@ -317,14 +331,14 @@ const component = {
 					object-fit: contain;
 					width: 16px;
 				}
-		
+
 				&__menu {
 					width: 100%;
 					background: rgb(212, 208, 200);
 					color: #333;
 					padding-left: 5px;
 					padding-bottom: 2px;
-		
+
 					span {
 						border: 1px inset transparent;
 						cursor: pointer;
@@ -337,7 +351,7 @@ const component = {
 						}
 					}
 				}
-		
+
 				&__content {
 					background: #FFF;
 					display: flex;

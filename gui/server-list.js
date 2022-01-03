@@ -15,7 +15,7 @@ export async function main (ns) {
 	app.mount({
 		template: `
 			<div>
-				<app-window title="Server list" class="window--server-list" @window:close="kill">
+				<app-window title="Server list" :can-refresh="true" class="window--server-list" @window:close="kill" @window:refresh="refresh">
 					<div class="server-list__container">
 						<server-list-tree
 							class="server-list"
@@ -25,7 +25,6 @@ export async function main (ns) {
 							@click:connect="runConnect"
 							@click:hack="runHack"
 						/>
-						<button class="server-list__refresh" @click="refresh">Refresh</button>
 						<input
 							:type="inputType"
 							class="server-list__search-input"
@@ -170,20 +169,20 @@ export async function main (ns) {
 					width: 22vw;
 				}
 			}
-			
+
 			.server-list {
 				list-style: none;
 				margin: 0;
 				padding: 0;
 				width: 100%;
-			
+
 				&--filtered {
 					&, .server-list {
 						padding-left: 0;
 					}
 				}
-			
-				&__refresh, &__search, &__search-input {
+
+				&__search, &__search-input {
 					background: none;
 					border: 1px solid;
 					color: currentColor;
@@ -194,26 +193,22 @@ export async function main (ns) {
 					position: fixed;
 					right: 26px;
 				}
-			
-				&__refresh {
-					top: 36px;
-				}
-			
+
 				&__search-input {
-					top: 69px;
+					top: 36px;
 					transition: .2s cubic-bezier(0.4, 0.0, 0.2, 1);
 					transition-property: color, width;
 					width: 65px;
-			
+
 					&::-webkit-input-placeholder {
 						color: #006F00;
 					}
-			
+
 					&:not([type="search"])::-webkit-input-placeholder {
 						color: inherit;
 						text-align: center;
 					}
-			
+
 					&[type="search"] {
 						width: 130px;
 					}
