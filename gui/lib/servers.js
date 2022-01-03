@@ -3,8 +3,8 @@
  * @param {String} searchValue
  **/
 export function filterItem (server, searchValue) {
-	server.isFiltered = searchValue && !server.hostname.match(searchValue)
-	server.connections.map(filterItem)
+	server.isFiltered = searchValue && !server.hostname.toLowerCase().match(searchValue.toLowerCase())
+	server.connections.map(((connection) => filterItem(connection, searchValue)))
 	return server
 }
 

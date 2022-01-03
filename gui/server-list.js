@@ -108,7 +108,7 @@ export async function main (ns) {
 			const runConnect = ({ ancestors }) => inputTerminalCommands(getConnectCommand(ancestors))
 			const runHack = ({ ancestors, numOpenPortsRequired }) => inputTerminalCommands([
 				...getConnectCommand(ancestors),
-				cracksOwned.slice(0, numOpenPortsRequired).map((crack) => `run ${crack}`),
+					...cracksOwned.slice(0, numOpenPortsRequired).map((crack) => `run ${crack}`),
 				"run NUKE.exe"
 			])
 
@@ -199,7 +199,7 @@ export async function main (ns) {
 					top: 36px;
 				}
 			
-				&_search-input {
+				&__search-input {
 					top: 69px;
 					transition: .2s cubic-bezier(0.4, 0.0, 0.2, 1);
 					transition-property: color, width;
