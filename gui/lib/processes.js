@@ -12,17 +12,42 @@ export const getRunningProcesses = (ns) =>
 
 
 /**
- * @param{[String, {filename: String, threads: Number, args: String[], pid: Number}[]][]} processes
- * @param {String} process
- * @param {String[]} args
- * @return {Boolean}
+ * @param {NS} ns
+ * @param {{ filename: String, args: String[], hosts: String[] }} process
+ * @return {{duration: Number, isSleeping: Boolean, timeRunning: Number}|null}
  */
-export const isProcessRunning = (processes, process, args) => {
-	for (const [, tasks] of processes) {
-		if (tasks.findIndex(({ filename, args: a }) => filename === process && JSON.stringify(args) === JSON.stringify((a))) !== -1) {
-			return true
+export const getProcessExpiryDetails = (ns, { filename, hosts, args }) => {
+	const logs = ns.getScriptLogs(filename, hosts[0], ...args)
+	let i = logs.length
+	let log
+	const { onlineRunningTime, offlineRunningTime } = ns.getRunningScript(filename, hosts[0], ...args)
+	const timeRunning = onlineRunningTime + offlineRunningTime
+	const pattern = new RegExp(/^sleep:.+?([\d.]+)/)
+	const duration = logs.reduce((total, logOutput) => {
+		const match = logOutput.match(pattern)
+		return total + (!!match ? Number(match[1]) : 0)
+	}, 0) / 1000
+	const returnValue = {
+		duration,
+		timeRunning,
+		isSleeping: true,
+	}
+
+	while (!log && i--) {
+		if (logs[i].indexOf(": Executing") !== -1) {
+			log = logs[i]
 		}
 	}
 
-	return false
+	if (log) {
+		returnValue.isSleeping = false
+
+		const time = log.match(/([0-9.])+ /g).map(Number).reverse()
+		const multipliers = [1, 60, 3_600, 86_400]
+		for (let i = 0; i < time.length; ++i) {
+			returnValue.duration += time[i] * multipliers[i]
+		}
+	}
+
+	return returnValue
 }

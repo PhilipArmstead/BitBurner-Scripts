@@ -22,3 +22,10 @@ export const inputTerminalCommand = (command) => {
 
 	return false
 }
+
+
+/**
+ * @param {String[]} command
+ * @return {Boolean}
+ **/
+export const inputTerminalCommands = (command) => inputTerminalCommand(command.join("; "))

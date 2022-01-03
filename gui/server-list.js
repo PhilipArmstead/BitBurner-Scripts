@@ -1,273 +1,224 @@
-import { Window } from "/gui/lib/Window.js"
-import { icons } from "/gui/lib/constants.js"
-import { getServers } from "/gui/lib/servers.js"
-import { inputTerminalCommand } from "/gui/lib/terminal.js"
+import VueApp from "/gui/lib/VueApp.js"
+import AppWindow from "/gui/component/Window.js"
+import ServerListTree from "/gui/component/ServerListTree.js"
+import { canRootServer, getCracksOwned } from "/gui/lib/cracks.js"
+import { getServers, filterItem } from "/gui/lib/servers.js"
+import { inputTerminalCommands } from "/gui/lib/terminal.js"
 
 
 /** @param {NS} ns **/
 export async function main (ns) {
-	const rootElement = globalThis["document"].createElement("div")
-	rootElement.classList.add("server-list__container")
-	rootElement.insertAdjacentHTML("beforeend", `
-		<ul class="server-list"></ul>
-		<button class="server-list__refresh">Refresh</button>
-		<input class="server-list__search-input" placeholder="Search" />
-	`)
+	await VueApp.initialise()
+	const app = new VueApp(ns)
+	new ServerListTree(app)
+	new AppWindow(app)
+	app.mount({
+		template: `
+			<div>
+				<app-window title="Server list" class="window--server-list" @window:close="kill">
+					<div class="server-list__container">
+						<server-list-tree
+							class="server-list"
+							:class="{ 'server-list--filtered': !!searchValue }"
+							:servers="filteredServers"
+							@click:backdoor="runBackdoor"
+							@click:connect="runConnect"
+							@click:hack="runHack"
+						/>
+						<button class="server-list__refresh" @click="refresh">Refresh</button>
+						<input
+							:type="inputType"
+							class="server-list__search-input"
+							:class="{ 'input--focused': isFocused }"
+							placeholder="Search"
+							v-model="searchValue"
+							@focus="searchFocusHandler"
+							@blur="searchBlurHandler"
+						/>
+					</div>
+				</app-window>
+			</div>
+		`,
+		setup () {
+			const terminal = globalThis["document"].getElementById("terminal-input")
+			const playerHacking = ns.getPlayer().hacking
+			const cracksOwned = getCracksOwned(ns)
+			const servers = Object.entries(getServers(ns).connections)
+				.map(([hostname, { connections }]) => getItem(hostname, connections))
 
-	populateServers(ns, rootElement)
-}
+			const { computed, ref } = Vue
+			const inputType = ref(null)
+			const isFocused = ref(false)
+			const searchValue = ref("")
 
-
-/**
- * @param {NS} ns
- * @param {HTMLElement} rootElement
- **/
-const populateServers = (ns, rootElement) => {
-	const servers = getServers(ns)
-	addServersToDocument(ns, servers.connections, rootElement.firstElementChild, ["home"])
-
-	const win = new Window("Server list", { theme: "terminal", content: rootElement.outerHTML })
-	addEventListenersToListItems(ns, win.element)
-	win.element.classList.add("window--server-list")
-}
-
-
-/**
- * @param {NS} ns
- * @param {{connections: Object[]}} servers
- * @param {HTMLElement} fragment
- * @param {String[]} ancestors
- **/
-const addServersToDocument = (ns, servers, fragment, ancestors) => {
-	Object.entries(servers).forEach(([hostname, { connections }]) => {
-		const listItem = renderServerAsListItem(ns, hostname, ancestors)
-
-		fragment.appendChild(listItem)
-
-		if (connections && Object.keys(connections).length) {
-			addServersToDocument(ns, connections, listItem.querySelector("ul"), [...ancestors, hostname])
-		}
-	})
-}
-
-
-/**
- * @param {NS} ns
- * @param {String} hostname
- * @param {String[]} ancestors
- * @return {HTMLLIElement}
- **/
-const renderServerAsListItem = (ns, hostname, ancestors) => {
-	const server = ns.getServer(hostname)
-	const contractCount = ns.ls(hostname, ".cct").length
-	const { hasBackdoorClass, hasBackdoorTitle, hasRootClass, hasRootTitle } = getServerIsCompromisedStatus(ns, server)
-
-	const listItem = globalThis["document"].createElement("li")
-	listItem.classList.add("server")
-	listItem.dataset.server = hostname
-	listItem.dataset.ancestors = ancestors.join(",")
-	listItem.insertAdjacentHTML("beforeend", `
-		<span class="server__item">
-		${!server.purchasedByPlayer ? `
-			<button class="icon icon--hacked${hasRootClass}" ${hasRootTitle ? `title="${hasRootTitle}"` : ""}>${icons.hacked}</button>
-			<button class="icon icon--backdoored${hasBackdoorClass}" ${hasBackdoorTitle ?
-		`title="${hasBackdoorTitle}"` :
-		""}>${icons.backdoored}</button>
-			` : ""}
-			<button class="server__connect">${server.hostname}</button>
-			${contractCount ?
-		`<span class="server__contract-count"><span class="icon icon--contract">${icons.contract}</span> x${contractCount}</span>` :
-		""}
-		</span>
-		<ul class="server__children"></ul>
-	`)
-
-	return listItem
-}
+			const filteredServers = computed(() => servers.map((server) => filterItem(server, searchValue.value)))
 
 
-/**
- * @param {NS} ns
- * @param {HTMLElement} container
- **/
-const addEventListenersToListItems = (ns, container) => {
-	addRefreshListener(container)
-	addSearchListener(container)
+			/**
+			 * @param {String} hostname
+			 * @param {Object[]} children
+			 * @param {String[]} ancestors
+			 * @return {{hostname: String, contractCount: Number, hasBackdoorTitle: String, hasBackdoorClass: String, hasRootTitle: String, hasRootClass: String, ancestors: {String}[], connections: {Object}[], purchasedByPlayer: {Boolean}}}
+			 */
+			function getItem (hostname, children, ancestors = ["home"]) {
+				const server = ns.getServer(hostname)
+				const { hasBackdoorClass, hasBackdoorTitle, hasRootClass, hasRootTitle } = getServerIsCompromisedStatus(server)
+				const latestAncestors = [...ancestors, hostname]
 
-	Array.from(container.querySelectorAll(".server")).forEach((server) => {
-		const ancestors = server.dataset.ancestors.split(",")
-
-		addConnectListener(server, ancestors)
-		addHackListener(ns, server, ancestors, getCracksOwned(ns))
-		addBackdoorListener(server, ancestors)
-	})
-}
-
-
-/**
- * @param {HTMLElement} server
- * @param {String[]} ancestors
- **/
-const getConnectionCommand = (server, ancestors) => ([
-	"home; ",
-	...ancestors.slice(1).map((node) => `connect ${node}; `),
-	`connect ${server.dataset.server}; `,
-]).join("")
-
-
-/**
- * @param {HTMLElement} container
- **/
-const addRefreshListener = (container) => {
-	container.querySelector(".server-list__refresh").addEventListener("click", () => {
-		if (inputTerminalCommand("home; run /gui/server-list.js")) {
-			container.remove()
-		}
-	})
-}
-
-
-/**
- * @param {HTMLElement} container
- **/
-const addSearchListener = (container) => {
-	const search = container.querySelector(".server-list__search-input")
-	const terminalInput = globalThis["document"].getElementById("terminal-input")
-	const className = "input--focused"
-
-	search.addEventListener("focus", () => {
-		search.classList.add(className)
-		search.setAttribute("type", "search")
-		terminalInput.setAttribute("disabled", "disabled")
-	})
-	search.addEventListener("blur", () => {
-		search.classList.remove(className)
-		terminalInput.removeAttribute("disabled")
-
-		if (!search.value.trim()) {
-			search.removeAttribute("type")
-		}
-	})
-	search.addEventListener("input", () => {
-		filterServers(container, search.value.trim())
-	})
-}
-
-
-/**
- * @param {HTMLElement} server
- * @param {String[]} ancestors
- **/
-const addConnectListener = (server, ancestors) => {
-	server.querySelector(".server__connect").addEventListener("click", () => {
-		inputTerminalCommand(getConnectionCommand(server, ancestors))
-	})
-}
-
-
-/**
- * @param {NS} ns
- * @param {HTMLElement} server
- * @param {String[]} ancestors
- * @param {String[]} cracksOwned
- **/
-const addHackListener = (ns, server, ancestors, cracksOwned) => {
-	const { numOpenPortsRequired } = ns.getServer(server.dataset.server)
-
-	server.querySelector(".icon--hacked")?.addEventListener("click", () => {
-		inputTerminalCommand([
-			`${getConnectionCommand(server, ancestors)} `,
-			cracksOwned.slice(0, numOpenPortsRequired).map((crack) => `run ${crack}; `).join(""),
-			"run NUKE.exe"
-		].join(""))
-	})
-}
-
-
-/**
- * @param {HTMLElement} server
- * @param {String[]} ancestors
- **/
-const addBackdoorListener = (server, ancestors) => {
-	server.querySelector(".icon--backdoored")?.addEventListener("click", () => {
-		inputTerminalCommand(`${getConnectionCommand(server, ancestors)} backdoor`)
-	})
-}
-
-
-/**
- * @param {NS} ns
- * @param {{numOpenPortsRequired: Number}} server
- * @return {Boolean}
- **/
-const canRootServer = (ns, server) => getCracksOwned(ns).length >= server.numOpenPortsRequired
-
-
-/**
- * @param {NS} ns
- * @return {String[]}
- **/
-const getCracksOwned = (ns) => ([
-	"BruteSSH.exe",
-	"SQLInject.exe",
-	"HTTPWorm.exe",
-	"FTPCrack.exe",
-	"relaySMTP.exe",
-]).filter(crack => ns.fileExists(crack))
-
-
-/**
- * @param {NS} ns
- * @param {{hasAdminRights: Boolean, backdoorInstalled: Boolean, requiredHackingSkill: Number, numOpenPortsRequired: Number}} server
- * @return {{ hasBackdoorClass: String, hasBackdoorTitle: String, hasRootClass: String, hasRootTitle: String }}
- **/
-const getServerIsCompromisedStatus = (ns, server) => {
-	let hasRootClass = server.hasAdminRights ? " icon--has-hacked" : ""
-	let hasBackdoorClass = server.backdoorInstalled ? " icon--has-backdoored" : ""
-
-	if (!hasRootClass && canRootServer(ns, server)) {
-		hasRootClass = " icon--can-hack"
-	}
-
-	if (!hasBackdoorClass && hasRootClass && server.requiredHackingSkill < ns.getPlayer().hacking) {
-		hasBackdoorClass = " icon--can-backdoor"
-	}
-
-	const hasRootTitle = hasRootClass.indexOf("--can") !== -1 ?
-		"Click for root access" :
-		(!hasRootClass ? "Cannot Nuke this server yet" : "")
-	const hasBackdoorTitle = hasBackdoorClass.indexOf("--can") !== -1 ?
-		"Click to backdoor" :
-		(!hasBackdoorClass ? "Cannot backdoor this server yet" : "")
-
-	return { hasBackdoorClass, hasBackdoorTitle, hasRootClass, hasRootTitle }
-}
-
-
-/**
- * @param {HTMLElement} container
- * @param {String} searchValue
- **/
-const filterServers = (container, searchValue) => {
-	const serverList = container.querySelector(".server-list")
-	const filteredClassName = "server--filtered"
-	const serverFilterClassName = "server-list--filtered"
-
-	if (searchValue) {
-		serverList.classList.add(serverFilterClassName)
-
-		Array.from(container.querySelectorAll(".server__item")).forEach((element) => {
-			if (element.querySelector(".server__connect").textContent.indexOf(searchValue) === -1) {
-				element.classList.add(filteredClassName)
-			} else {
-				element.classList.remove(filteredClassName)
+				return {
+					ancestors: latestAncestors,
+					connections: children ?
+						Object.entries(children)?.map(([hostname, { connections }]) => getItem(hostname, connections, latestAncestors)) :
+						[],
+					hostname,
+					hasBackdoorClass,
+					hasBackdoorTitle,
+					hasRootClass,
+					hasRootTitle,
+					purchasedByPlayer: server.purchasedByPlayer,
+					contractCount: ns.ls(hostname, ".cct").length,
+				}
 			}
-		})
-	} else {
-		serverList.classList.remove(serverFilterClassName)
 
-		Array.from(container.querySelectorAll(".server__item")).forEach((element) => {
-			element.classList.remove(filteredClassName)
-		})
-	}
+			const kill = () => app.unmount()
+			const searchBlurHandler = () => {
+				isFocused.value = false
+				terminal?.removeAttribute("disabled")
+
+				if (!searchValue.value) {
+					inputType.value = null
+				}
+			}
+			const searchFocusHandler = () => {
+				isFocused.value = true
+				inputType.value = "search"
+				terminal?.setAttribute("disabled", "disabled")
+			}
+
+			const refresh = () => {
+				if (inputTerminalCommands(["home", "run /gui/server-list.js"])) {
+					kill()
+				}
+			}
+
+			const runBackdoor = ({ ancestors }) => inputTerminalCommands([
+				...getConnectCommand(ancestors),
+				"backdoor"
+			])
+			const runConnect = ({ ancestors }) => inputTerminalCommands(getConnectCommand(ancestors))
+			const runHack = ({ ancestors, numOpenPortsRequired }) => inputTerminalCommands([
+				...getConnectCommand(ancestors),
+				cracksOwned.slice(0, numOpenPortsRequired).map((crack) => `run ${crack}`),
+				"run NUKE.exe"
+			])
+
+
+			/**
+			 * @param {String[]} servers
+			 * @return {String[]}
+			 */
+			const getConnectCommand = (servers) => ([
+				"home",
+				...servers.slice(1).map((node) => `connect ${node}`),
+			])
+
+
+			/**
+			 * @param {{hasAdminRights: Boolean, backdoorInstalled: Boolean, requiredHackingSkill: Number }} server
+			 * @return {{hasBackdoorTitle: {String}, hasBackdoorClass: {String}, hasRootTitle: {String}, hasRootClass: {String}}}
+			 */
+			function getServerIsCompromisedStatus (server) {
+				let hasRootClass = server.hasAdminRights ? "icon--has-hacked" : ""
+				let hasBackdoorClass = server.backdoorInstalled ? "icon--has-backdoored" : ""
+
+				if (!hasRootClass && canRootServer(server)) {
+					hasRootClass = "icon--can-hack"
+				}
+
+				if (!hasBackdoorClass && hasRootClass && server.requiredHackingSkill < playerHacking) {
+					hasBackdoorClass = "icon--can-backdoor"
+				}
+
+				const hasRootTitle = hasRootClass.indexOf("--can") !== -1 ?
+					"Click for root access" :
+					(!hasRootClass ? "Cannot Nuke this server yet" : "")
+				const hasBackdoorTitle = hasBackdoorClass.indexOf("--can") !== -1 ?
+					"Click to backdoor" :
+					(!hasBackdoorClass ? "Cannot backdoor this server yet" : "")
+
+				return { hasBackdoorClass, hasBackdoorTitle, hasRootClass, hasRootTitle }
+			}
+
+			return {
+				filteredServers,
+				inputType,
+				isFocused,
+				searchValue,
+				kill,
+				searchBlurHandler,
+				searchFocusHandler,
+				refresh,
+				runBackdoor,
+				runConnect,
+				runHack
+			}
+		},
+		style: `
+			.window--server-list {
+				.window {
+					height: 70vh;
+					width: 22vw;
+				}
+			}
+			
+			.server-list {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+				width: 100%;
+			
+				&--filtered {
+					&, .server-list {
+						padding-left: 0;
+					}
+				}
+			
+				&__refresh, &__search, &__search-input {
+					background: none;
+					border: 1px solid;
+					color: currentColor;
+					cursor: pointer;
+					margin: 0;
+					min-width: 65px;
+					padding: 4px;
+					position: fixed;
+					right: 26px;
+				}
+			
+				&__refresh {
+					top: 36px;
+				}
+			
+				&_search-input {
+					top: 69px;
+					transition: .2s cubic-bezier(0.4, 0.0, 0.2, 1);
+					transition-property: color, width;
+					width: 65px;
+			
+					&::-webkit-input-placeholder {
+						color: #006F00;
+					}
+			
+					&:not([type="search"])::-webkit-input-placeholder {
+						color: inherit;
+						text-align: center;
+					}
+			
+					&[type="search"] {
+						width: 130px;
+					}
+				}
+			}
+		`
+	})
 }

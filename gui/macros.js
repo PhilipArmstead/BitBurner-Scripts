@@ -1,69 +1,68 @@
-import { Window } from "/gui/lib/Window.js"
-import { inputTerminalCommand } from "/gui/lib/terminal.js"
+import VueApp from "/gui/lib/VueApp.js"
+import AppWindow from "/gui/component/Window.js"
+import { inputTerminalCommands } from "/gui/lib/terminal.js"
 import { macroList } from "/gui/config/macro-list.config.js"
-import css from "/gui/css/macros.js"
 
 
 /** @param {NS} ns **/
 export async function main (ns) {
-	insertStylesheet()
+	await VueApp.initialise()
+	const app = new VueApp(ns)
+	new AppWindow(app)
+	app.mount({
+		template: `
+			<div>
+				<app-window title="Macros" class="window--macros" @window:close="kill">
+					<div class="macro-list">
+						<div v-for="[label, commands] in listItems" :key="label" class="macro">
+							<button class="macro__cta" @click="inputTerminalCommands(commands)">{{ label }}</button>
+						</div>
+					</div>
+				</app-window>
+			</div>
+		`,
+		setup () {
+			const kill = () => app.unmount()
+			const listItems = Object.entries(macroList).map(([label, commands]) => [label, commands])
 
-	const doc = globalThis["document"]
-	const oldWindow = doc.querySelector(".window--macros")
-	if (oldWindow && oldWindow.parentElement) {
-		oldWindow.remove()
-	}
+			return { kill, listItems, inputTerminalCommands }
+		},
+		style: `
+			.window--macros {
+				.window {
+					width: 10vw;
+				}
+			
+				.window__content {
+					flex: 100%;
+				}
 
-	const rootElement = createRootElement()
-	populateMacroList(rootElement.firstElementChild)
-	const win = new Window("Macros", { theme: "terminal" })
-	win.element.classList.add("window--macros")
-	win.element.querySelector(".window__content").insertAdjacentElement("beforeend", rootElement)
-}
+				.macro-list {
+					align-content: flex-start;
+					display: flex;
+					flex-wrap: wrap;
+					justify-content: flex-start;
+				}
 
+				.macro {
+					margin: 0 15px 8px 3px;
+				}
 
-const insertStylesheet = () => {
-	const stylesheetId = "macro-id"
-	const doc = globalThis["document"]
-	let stylesheet = doc.getElementById(stylesheetId)
+				.macro__cta {
+					background: none;
+					border: none;
+					border-radius: 2px;
+					box-shadow: 0 0 0px 1px #AAAAAA54;
+					color: inherit;
+					cursor: pointer;
+					padding: 6px 8px;
+					transition: box-shadow .2s linear;
 
-	if (stylesheet) {
-		stylesheet.remove()
-	}
-
-	stylesheet = doc.createElement("style")
-	stylesheet.id = stylesheetId
-	stylesheet.innerHTML = css
-	doc.head.insertAdjacentElement("beforeend", stylesheet)
-}
-
-
-/** @return {HTMLDivElement} */
-const createRootElement = () => {
-	const rootElement = globalThis["document"].createElement("div")
-	rootElement.classList.add("macro-list__container")
-	rootElement.insertAdjacentHTML("beforeend", `<div class="macro-list"></div>`)
-
-	return rootElement
-}
-
-
-/**
- * @param {HTMLDivElement} element
- **/
-const populateMacroList = (element) => {
-	Object.entries(macroList).forEach(([label, commands]) => {
-		const button = globalThis["document"].createElement("button")
-		button.classList.add("macro__cta")
-		button.textContent = label
-		button.addEventListener("click", () => {
-			console.log(commands)
-			inputTerminalCommand(commands.join("; "))
-		})
-
-		const container = globalThis["document"].createElement("div")
-		container.classList.add("macro")
-		container.insertAdjacentElement("beforeend", button)
-		element.insertAdjacentElement("beforeend", container)
+					&:hover {
+						box-shadow: 0 0 0px 1px #AAA;
+					}
+				}
+			}
+		`
 	})
 }
