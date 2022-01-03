@@ -179,7 +179,11 @@ const getProcessExpiryDetails = (ns, { filename, hosts, args }) => {
 
 	if (log) {
 		const time = log.match(/([0-9.])+ /g).map(Number)
-		returnValue.duration += time.length > 1 ? time[0] * 60 + time[1] : time[0]
+		const days = (time[3] || 0) * 86400
+		const hours = (time[2] || 0) * 3600
+		const minutes = (time[1] || 0) * 60
+		const seconds = time[0] || 0
+		returnValue.duration += days + hours + minutes + seconds
 	}
 
 	return returnValue
