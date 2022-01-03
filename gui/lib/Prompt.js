@@ -2,12 +2,13 @@ import VueApp from "/gui/lib/VueApp.js"
 import AppWindow from "/gui/component/Window.js"
 
 
-export default async (ns, message) => {
+export default async (message) => {
 	let userInput = null
 	let terminalTimeout
+	let promiseResolution
 
 	await VueApp.initialise()
-	const app = new VueApp(ns)
+	const app = new VueApp()
 	new AppWindow(app)
 	app.mount({
 		template: `
@@ -25,7 +26,10 @@ export default async (ns, message) => {
 			const { onMounted, ref } = Vue
 			const inputField = ref("")
 			const input = ref("")
-			const kill = () => app.unmount()
+			const kill = () => {
+				app.unmount()
+				promiseResolution()
+			}
 			const submit = () => {
 				userInput = input.value
 				kill()
@@ -98,9 +102,7 @@ export default async (ns, message) => {
 
 	terminalTimeout = setInterval(disableTerminalInput, 100)
 
-	while (app.isAlive) {
-		await ns.sleep(100)
-	}
+	await new Promise((resolve) => (promiseResolution = resolve))
 
 	clearInterval(terminalTimeout)
 	enableTerminalInput()

@@ -12,6 +12,6 @@ import Prompt from '/gui/lib/Prompt.js'
 And then call with the desired header and await the response
 
 ```js
-const input1 = await Prompt(ns, "Pick a number.")
-const input2 = await Prompt(ns, "And another...")
+const input1 = await Prompt("Pick a number.")
+const input2 = await Prompt("And another...")
 ```
