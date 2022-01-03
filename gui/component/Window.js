@@ -14,7 +14,7 @@ const component = {
 						transform: \`translate(\${left}px, \${top}px)\`,
 						width: \`\${processWidth}px\`,
 						height: \`\${processHeight}px\`,
-						visibility: isHidden
+						visibility: isHidden? 'hidden' : null
 					}"
 				>
 					<div class="window__toolbar" @mousedown="beginGrabbing">
@@ -118,7 +118,7 @@ const component = {
 			setTimeout(() => {
 				isHidden.value = false
 				setPosition()
-			}, 200)
+			}, 100)
 		})
 
 		const beginGrabbing = ({ x, y, button }) => {
