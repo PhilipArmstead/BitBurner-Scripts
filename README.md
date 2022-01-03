@@ -10,10 +10,6 @@ Below are some things I think you'll be most interested in.
   tabs using the mouse wheel. ([Demo](docs/qol-scroll-tabs.gif))
 
 
-- `/qol/make-boxes-minimisable.js` This script will allow you to minimise the game's modals (Active Scripts etc.) by
-  double-clicking the title. ([Demo](docs/qol-minimise-boxes.gif))
-
-
 - `/qol/add-tab-control-to-editor` This script will allow you to navigate through editor tabs with ctrl + tab (or backwards with ctrl + shift + tab).
 
 
