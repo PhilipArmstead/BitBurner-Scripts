@@ -131,7 +131,7 @@ export async function main (ns) {
 				let hasRootClass = server.hasAdminRights ? "icon--has-hacked" : ""
 				let hasBackdoorClass = server.backdoorInstalled ? "icon--has-backdoored" : ""
 
-				if (!hasRootClass && canRootServer(server)) {
+				if (!hasRootClass && canRootServer(server, cracksOwned)) {
 					hasRootClass = "icon--can-hack"
 				}
 
