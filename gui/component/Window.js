@@ -103,7 +103,7 @@ const component = {
 			setTimeout(() => {
 				isHidden.value = false
 				setPosition()
-			})
+			}, 200)
 		})
 
 		const beginGrabbing = ({ x, y, button }) => {
