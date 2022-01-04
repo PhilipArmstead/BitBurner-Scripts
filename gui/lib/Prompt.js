@@ -1,5 +1,7 @@
+// TODO: add a select variation which accepts an array/object of options
 import VueApp from "/gui/lib/VueApp.js"
 import AppWindow from "/gui/component/Window.js"
+import UiButton from "/gui/component/UiButton.js"
 
 
 export default async (message) => {
@@ -10,6 +12,7 @@ export default async (message) => {
 	await VueApp.initialise()
 	const app = new VueApp()
 	new AppWindow(app)
+	new UiButton(app)
 	app.mount({
 		template: `
 			<app-window title="Prompt" class="window--prompt" @window:close="kill">
@@ -17,7 +20,7 @@ export default async (message) => {
 					<h1 class="user-prompt__message">{{ message }}</h1>
 					<form class="user-prompt__controls" @submit.prevent="submit">
 						<input ref="inputField" v-model="input" class="user-prompt__input" />
-						<button class="user-prompt__confirm">Confirm</button>
+						<ui-button class="user-prompt__confirm">Confirm</ui-button>
 					</div>
 				</div>
 			</app-window>
@@ -68,21 +71,18 @@ export default async (message) => {
 					flex: 1 0 100%;
 				}
 
-				&__input, &__confirm {
+				&__input {
 					background: none;
 					box-shadow: none;
-					color: #0C0;
-					line-height: 1;
-					margin: 0;
-					width: auto;
-				}
-
-				&__input {
 					border: none;
 					border-bottom: 2px solid #080;
+					color: #0C0;
 					flex: 1 0 auto;
 					font-size: 16px;
+					line-height: 1;
+					margin: 0;
 					padding: 0 3px;
+					width: auto;
 
 					&:focus {
 						border-color: #0C0;
@@ -91,10 +91,7 @@ export default async (message) => {
 				}
 
 				&__confirm {
-					border: 2px solid #080;
 					flex: 0 1 100px;
-					font-size: 14px;
-					padding: 10px;
 				}
 			}
 		`
