@@ -99,12 +99,12 @@ const component = {
 		const isHidden = ref(true)
 
 		const setPosition = () => {
-			processWidth.value = process.value.offsetWidth
-			processHeight.value = process.value.offsetHeight
+			const width = process.value.offsetWidth
+			const height = process.value.offsetHeight
 			windowWidth.value = globalThis.innerWidth
 			windowHeight.value = globalThis.innerHeight
-			left.value = windowWidth.value / 2 - processWidth.value / 2
-			top.value = windowHeight.value / 2 - processHeight.value / 2
+			left.value = windowWidth.value / 2 - width / 2
+			top.value = windowHeight.value / 2 - height / 2
 		}
 
 		onMounted(() => {
