@@ -214,6 +214,8 @@ const component = {
 				display: inline-flex;
 				flex-direction: column;
 				left: 0;
+				max-height: 100vh;
+				max-width: 100vw;
 				min-height: 120px;
 				min-width: 120px;
 				overflow: hidden;
