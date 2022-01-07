@@ -12,6 +12,7 @@ export async function main (ns) {
 		const path = `${baseUrl}${filename}`
 
 		try {
+			await ns.scriptKill(filename, 'home')
 			ns.rm(filename)
 			await ns.wget(`${path}?ts=${+new Date()}`, filename)
 		} catch (e) {
