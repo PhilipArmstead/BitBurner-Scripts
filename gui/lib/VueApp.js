@@ -21,6 +21,11 @@ export default class VueApp {
 		return this.#ns
 	}
 
+	/** @return {String} */
+	get id () {
+		return this.#id
+	}
+
 	/** @return {Boolean} */
 	get isAlive () {
 		return this.#isAlive
@@ -106,22 +111,20 @@ export default class VueApp {
 		const doc = globalThis["document"]
 
 		win.define = win._defineBak
-		Array.from(doc.getElementsByTagName("style")).forEach((tag) => {
+		for (const tag of doc.getElementsByTagName("style")) {
 			if (tag.type.toLowerCase() === "text/scss" && tag.dataset.compiled !== "true") {
-				try {
-					Sass.compile(tag.innerHTML, function (compiledCSS) {
-						const rawStyle = doc.createElement("style")
-						rawStyle.type = "text/css"
-						rawStyle.innerHTML = compiledCSS.text
-						doc
-							.getElementById(`${appId}__wrapper`)
-							.appendChild(rawStyle)
-					})
-				} catch(e) {
-					console.log(e)
-				}
+				Sass.compile(tag.innerHTML, function (compiledCSS) {
+					const rawStyle = doc.createElement("style")
+					rawStyle.type = "text/css"
+					rawStyle.innerHTML = compiledCSS.text
+					doc
+						.getElementById(`${appId}__wrapper`)
+						.appendChild(rawStyle)
+				})
 				tag.dataset.compiled = "true"
 			}
-		})
+		}
+
+		doc.dispatchEvent(new CustomEvent('sass:compiled', { detail: appId }))
 	}
 }
