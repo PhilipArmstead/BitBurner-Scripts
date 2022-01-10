@@ -33,6 +33,7 @@ export async function main (ns) {
 							v-model="searchValue"
 							@focus="searchFocusHandler"
 							@blur="searchBlurHandler"
+							@keydown.stop
 						/>
 					</div>
 				</app-window>
@@ -82,7 +83,6 @@ export async function main (ns) {
 			const kill = () => app.unmount()
 			const searchBlurHandler = () => {
 				isFocused.value = false
-				terminal?.removeAttribute("disabled")
 
 				if (!searchValue.value) {
 					inputType.value = null
@@ -91,7 +91,6 @@ export async function main (ns) {
 			const searchFocusHandler = () => {
 				isFocused.value = true
 				inputType.value = "search"
-				terminal?.setAttribute("disabled", "disabled")
 			}
 
 			const refresh = () => {

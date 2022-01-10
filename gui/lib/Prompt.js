@@ -10,7 +10,6 @@ import UiSelect from "/gui/component/UiSelect.js"
  */
 export default async (message, options) => {
 	let userInput = null
-	let terminalTimeout
 	let promiseResolution
 
 	await VueApp.initialise()
@@ -24,8 +23,8 @@ export default async (message, options) => {
 				<div class="user-prompt">
 					<h1 class="user-prompt__message">{{ message }}</h1>
 					<form class="user-prompt__controls" @submit.prevent="submit">
-						<input v-if="!options" ref="inputField" v-model="input" class="user-prompt__input" />
-						<ui-select v-else :choices="options" />
+						<input v-if="!options" ref="inputField" v-model="input" class="user-prompt__input" @keydown.stop />
+						<ui-select v-else v-model="input" teleport-id="${app.id}" :choices="options" class="user-prompt__input" />
 						<ui-button class="user-prompt__confirm">Confirm</ui-button>
 					</div>
 				</div>
@@ -105,26 +104,7 @@ export default async (message, options) => {
 		`
 	})
 
-	terminalTimeout = setInterval(disableTerminalInput, 100)
-
 	await new Promise((resolve) => (promiseResolution = resolve))
 
-	clearInterval(terminalTimeout)
-	enableTerminalInput()
-
 	return userInput
-}
-
-const disableTerminalInput = () => {
-	const terminalInput = globalThis["document"].getElementById("terminal-input")
-	if (terminalInput) {
-		terminalInput.setAttribute('disabled', 'disabled')
-	}
-}
-
-const enableTerminalInput = () => {
-	const terminalInput = globalThis["document"].getElementById("terminal-input")
-	if (terminalInput) {
-		terminalInput.removeAttribute('disabled')
-	}
 }

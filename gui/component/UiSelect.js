@@ -3,10 +3,10 @@ import BaseComponent from "/gui/component/BaseComponent.js"
 const component = {
 	name: "ui-select",
 	template: `
-		<div class="select" :class="[\`select--theme-\${theme}\`, { 'select--is-visible': isVisible }]">
-			<p ref="selectToggle" class="select__cta" @click="toggleMenuVisibility">{{ displayValue }}</p>
-			<teleport to="body">
-				<ul class="ui-select select__list">
+		<div class="select" :class="[\`select--theme-\${theme}\`]">
+			<p ref="selectToggle" class="select__cta" @click.stop="toggleMenuVisibility">{{ displayValue }}</p>
+			<teleport :to="\`#\${teleportId}\`">
+				<ul class="select__list" :class="[\`select--theme-\${theme}\`, { 'select--is-visible': isVisible }]" :style="{ left, top }" @click.stop>
 					<li v-for="(label, value) in choices" class="select__choice">
 						<button class="select__cta" @click.prevent="select(value)">{{ label }}</button>
 					</li>
@@ -15,6 +15,10 @@ const component = {
 		</div>
 		`,
 	props: {
+		teleportId: {
+			type: String,
+			default: "body",
+		},
 		theme: {
 			type: String,
 			default: "terminal",
@@ -22,64 +26,64 @@ const component = {
 				return ["win95", "terminal"].includes(value)
 			}
 		},
+		modelValue: {
+			type: [Number, String],
+			default: null,
+		},
 		choices: {
 			type: [Array, Object],
 			required: true,
 		},
 	},
 	setup (props, { emit }) {
-		const { computed, ref } = Vue
+		const { computed, onUnmounted, ref } = Vue
 		const selectToggle = ref(null)
 		const isVisible = ref(false)
-		const selected = ref()
-		const displayValue = computed(() => selected.value || "Select an option")
+		const left = ref()
+		const top = ref()
+		const displayValue = computed(() => props.choices[props.modelValue] || "Select an option")
+
+		onUnmounted(() => {
+			globalThis['document'].removeEventListener('click', closeMenu)
+		})
+
 		const select = (value) => {
-			selected.value = props.choices[value]
-			emit('select:input', value)
+			closeMenu()
+			emit("update:modelValue", value)
 		}
-		const toggleMenuVisibility = () => isVisible.value = !isVisible.value
 
 		const setListPosition = () => {
-			console.log(selectToggle.value.getBoundingClientRect())
+			const { x, y } = selectToggle.value.getBoundingClientRect()
+			left.value = `${Math.floor(x - 3)}px`
+			top.value = `${Math.floor(y)}px`
+		}
+		const toggleMenuVisibility = () => {
+			isVisible.value = !isVisible.value
+			setListPosition()
 		}
 
-		return { displayValue, isVisible, selected, selectToggle, select, toggleMenuVisibility }
+		const closeMenu = () => isVisible.value = false
+
+		globalThis['document'].addEventListener('click', closeMenu)
+
+		return { displayValue, isVisible, left, selectToggle, top, select, toggleMenuVisibility }
 	},
 	style: `
 		.select {
 			display: flex;
 			flex-direction: column;
 			position: relative;
-		
-			&:not(.select--is-visible) .select__list {
-				opacity: 0;
-				transform: scale(0.4);
+			
+			&__cta, &__list {
+				user-select: none;
 			}
-		
-			&--theme-terminal {
-				background-color: rgb(18, 20, 21);
-				border: 1px solid rgb(64, 64, 64);
-				box-shadow: #0003 0 5px 5px -3px, #00000024 0px 8px 10px 1px, #0000001f 0px 3px 14px 2px;
-		
-				.select__cta {
-					color: #17af17;
-		
-					&:hover {
-						color: #0C0;
-					}
-		
-					&--selected {
-						background-color: rgba(33, 168, 33, 0.08);
-					}
-				}
-			}
-		
-			&__list.ui-select, &__choice {
+
+			&__list, &__choice {
 				list-style: none;
 				margin: 0;
 			}
-		
-			&__list.ui-select {
+
+			&__list {
 				background: #000000e8;
 				border: 1px solid;
 				max-width: calc(100% - 32px);
@@ -91,6 +95,34 @@ const component = {
 				position: fixed;
 				transition: opacity 368ms cubic-bezier(0.4, 0, 0.2, 1), transform 245ms cubic-bezier(0.4, 0, 0.2, 1);
 				transform-origin: 50% 0;
+				z-index: 10000;
+
+				&:not(.select--is-visible) {
+					opacity: 0;
+					transform: scale(0.4);
+
+					&, * {
+						pointer-events: none;
+					}
+				}
+
+				&.select--theme-terminal {
+					background-color: rgba(#121212, 0.95);
+					border: 1px solid #080;
+
+					.select__cta {
+						color: #17af17;
+
+						&:hover {
+							background: rgba(#0A0, 0.33);
+							color: #0C0;
+						}
+
+						&--selected {
+							background-color: rgba(33, 168, 33, 0.08);
+						}
+					}
+				}
 			}
 
 			&__cta {
