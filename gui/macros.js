@@ -28,7 +28,7 @@ export async function main () {
 				uncategorised: Object.fromEntries(Object.entries(macroList).filter(([, list]) => Array.isArray(list)).map(([label, commands]) => [label, commands])),
 				...Object.fromEntries(Object.entries(macroList).filter(([, list]) => !Array.isArray(list)).map(([label, commands]) => [label, commands]))
 			}
-			console.log(items)
+
 			const kill = () => app.unmount()
 			const refresh = () => {
 				if (inputTerminalCommands(['home', 'run /gui/macros.js'])) {

@@ -5,7 +5,7 @@ export default class VueApp {
 	#id
 	#isAlive
 
-	/** @param {NS} ns */
+	/** @param {NS?} ns */
 	constructor (ns) {
 		if (!globalThis.Vue) {
 			throw new Error("Vue is not initialised; call `VueApp.initialise()` first")
@@ -19,6 +19,11 @@ export default class VueApp {
 	/** @return {NS} */
 	get ns () {
 		return this.#ns
+	}
+
+	/** @return {String} */
+	get id () {
+		return this.#id
 	}
 
 	/** @return {Boolean} */
@@ -106,7 +111,7 @@ export default class VueApp {
 		const doc = globalThis["document"]
 
 		win.define = win._defineBak
-		Array.from(doc.getElementsByTagName("style")).forEach((tag) => {
+		for (const tag of doc.getElementsByTagName("style")) {
 			if (tag.type.toLowerCase() === "text/scss" && tag.dataset.compiled !== "true") {
 				Sass.compile(tag.innerHTML, function (compiledCSS) {
 					const rawStyle = doc.createElement("style")
@@ -118,6 +123,8 @@ export default class VueApp {
 				})
 				tag.dataset.compiled = "true"
 			}
-		})
+		}
+
+		doc.dispatchEvent(new CustomEvent('sass:compiled', { detail: appId }))
 	}
 }

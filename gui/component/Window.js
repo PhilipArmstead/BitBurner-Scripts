@@ -115,10 +115,18 @@ const component = {
 				}
 			}).observe(process.value)
 
-			setTimeout(() => {
+			const showComponent = () => {
 				isHidden.value = false
 				setPosition()
-			}, 100)
+			}
+			let showComponentTimeout
+
+			globalThis['document'].addEventListener('sass:compiled', () => {
+				if (isHidden.value) {
+					clearTimeout(showComponentTimeout)
+					showComponentTimeout = setTimeout(showComponent, 100)
+				}
+			})
 		})
 
 		const beginGrabbing = ({ x, y, button }) => {
