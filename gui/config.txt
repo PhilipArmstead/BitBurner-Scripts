@@ -4,6 +4,7 @@
 		"/gui/component/ProcessListItems.js",
 		"/gui/component/ServerListTree.js",
 		"/gui/component/UiButton.js",
+		"/gui/component/UiSelect.js",
 		"/gui/component/Window.js",
 		"/gui/css/toasts.js",
 		"/gui/lib/constants.js",
