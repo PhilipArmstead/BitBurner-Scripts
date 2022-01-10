@@ -1,10 +1,14 @@
-// TODO: add a select variation which accepts an array/object of options
 import VueApp from "/gui/lib/VueApp.js"
 import AppWindow from "/gui/component/Window.js"
 import UiButton from "/gui/component/UiButton.js"
+import UiSelect from "/gui/component/UiSelect.js"
 
 
-export default async (message) => {
+/**
+ * @param {String} message
+ * @param {Array|Object?} options
+ */
+export default async (message, options) => {
 	let userInput = null
 	let terminalTimeout
 	let promiseResolution
@@ -13,13 +17,15 @@ export default async (message) => {
 	const app = new VueApp()
 	new AppWindow(app)
 	new UiButton(app)
+	new UiSelect(app)
 	app.mount({
 		template: `
 			<app-window title="Prompt" class="window--prompt" @window:close="kill">
 				<div class="user-prompt">
 					<h1 class="user-prompt__message">{{ message }}</h1>
 					<form class="user-prompt__controls" @submit.prevent="submit">
-						<input ref="inputField" v-model="input" class="user-prompt__input" />
+						<input v-if="!options" ref="inputField" v-model="input" class="user-prompt__input" />
+						<ui-select v-else :choices="options" />
 						<ui-button class="user-prompt__confirm">Confirm</ui-button>
 					</div>
 				</div>
@@ -40,11 +46,13 @@ export default async (message) => {
 
 			onMounted(() => {
 				setTimeout(() => {
-					inputField.value.focus()
+					if (!!inputField.value) {
+						inputField.value.focus()
+					}
 				}, 300);
 			})
 
-			return { input, inputField, message, kill, submit }
+			return { input, inputField, message, options, kill, submit }
 		},
 		style: `
 			.window--prompt .window {

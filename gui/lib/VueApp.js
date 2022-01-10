@@ -5,7 +5,7 @@ export default class VueApp {
 	#id
 	#isAlive
 
-	/** @param {NS} ns */
+	/** @param {NS?} ns */
 	constructor (ns) {
 		if (!globalThis.Vue) {
 			throw new Error("Vue is not initialised; call `VueApp.initialise()` first")
@@ -108,14 +108,18 @@ export default class VueApp {
 		win.define = win._defineBak
 		Array.from(doc.getElementsByTagName("style")).forEach((tag) => {
 			if (tag.type.toLowerCase() === "text/scss" && tag.dataset.compiled !== "true") {
-				Sass.compile(tag.innerHTML, function (compiledCSS) {
-					const rawStyle = doc.createElement("style")
-					rawStyle.type = "text/css"
-					rawStyle.innerHTML = compiledCSS.text
-					doc
-						.getElementById(`${appId}__wrapper`)
-						.appendChild(rawStyle)
-				})
+				try {
+					Sass.compile(tag.innerHTML, function (compiledCSS) {
+						const rawStyle = doc.createElement("style")
+						rawStyle.type = "text/css"
+						rawStyle.innerHTML = compiledCSS.text
+						doc
+							.getElementById(`${appId}__wrapper`)
+							.appendChild(rawStyle)
+					})
+				} catch(e) {
+					console.log(e)
+				}
 				tag.dataset.compiled = "true"
 			}
 		})
