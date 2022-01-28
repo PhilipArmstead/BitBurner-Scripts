@@ -6,12 +6,13 @@ Below are some things I think you'll be most interested in.
 
 ## Quality of life
 
+- `/qol/shortcuts.js` Use customisable keyboard shortcuts to jump to any window linked from the sidebar, without
+  cancelling crimes, programs or faction contracts. ([Demo](docs/qol-scroll-tabs.gif))
+
 - `/qol/make-tabs-scrollable.js` This script will allow you to scroll horizontally through your text-editor's opened
   tabs using the mouse wheel. ([Demo](docs/qol-scroll-tabs.gif))
 
-
 - `/qol/add-tab-control-to-editor` This script will allow you to navigate through editor tabs with ctrl + tab (or backwards with ctrl + shift + tab).
-
 
 - `/qol/colourful-terminal.js` This script will allow you to style terminal output with rudimentary styles, like `<red></red>`, `<bold></bold>`, `<blue></blue>` etc.. ([Demo](docs/qol-colour-terminal.gif))
 
