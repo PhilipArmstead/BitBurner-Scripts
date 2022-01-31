@@ -3,7 +3,7 @@
  * ------
  * To configure the shortcut keys, modify the `shortcuts` variable below
  * If you're on Windows, you can't use numbers and you have to match the key's `code` property
- * If you're on Linux (and maybe MacOS) you can use anything, and either the `key` or `code` properties
+ * If you're on Linux or MacOS you can use anything, and either the `key` or `code` properties
  * If you're in the browser, you can't use this at all
  */
 
